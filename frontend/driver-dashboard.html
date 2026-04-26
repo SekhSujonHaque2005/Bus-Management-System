@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard | Smart Campus Bus</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <h3>
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 16C4 17.1 4.9 18 6 18H6.5L6 20H8L8.5 18H15.5L16 20H18L17.5 18H18C19.1 18 20 17.1 20 16V6C20 3.8 18.2 2 16 2H8C5.8 2 4 3.8 4 6V16ZM7.5 13C6.7 13 6 12.3 6 11.5C6 10.7 6.7 10 7.5 10C8.3 10 9 10.7 9 11.5C9 12.3 8.3 13 7.5 13ZM16.5 13C15.7 13 15 12.3 15 11.5C15 10.7 15.7 10 16.5 10C17.3 10 18 10.7 18 11.5C18 12.3 17.3 13 16.5 13ZM6 6H18V8H6V6Z"/>
+                </svg>
+                Driver Panel
+            </h3>
+            <ul>
+                <li><a href="#" class="active">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Trip Console
+                </a></li>
+                <li style="margin-top: auto; padding-top: 2rem;"><a href="#" id="nav-logout" style="color: var(--danger);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </a></li>
+            </ul>
+        </aside>
+
+        <main class="dashboard-content">
+            <header class="dashboard-header">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button id="mobileMenuBtn" style="display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer;">☰</button>
+                    <h2>Driver Console</h2>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div class="dropdown" id="notificationDropdown">
+                        <div style="position: relative; cursor: pointer; color: var(--text-muted);" id="notificationBell">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            <span id="notifBadge" style="position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid white;"></span>
+                        </div>
+                        <div class="dropdown-menu" style="width: 300px; padding: 0.5rem;">
+                            <div style="padding: 0.5rem 1rem; border-bottom: 1px solid #E2E8F0; font-weight: bold;">Notifications</div>
+                            <div id="notifList" style="max-height: 250px; overflow-y: auto;">
+                                <div class="dropdown-item" style="flex-direction: column; align-items: flex-start; gap: 0.2rem;">
+                                    <strong>Ready for Duty</strong>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Please start your trip when ready.</span>
+                                </div>
+                            </div>
+                            <div style="padding: 0.5rem; text-align: center; border-top: 1px solid #E2E8F0;">
+                                <button id="markReadBtn" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 0.85rem; font-weight: bold;">Mark all as read</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="profileDropdown">
+                        <div class="user-profile" id="profileAvatar" style="cursor: pointer;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" id="profileInitials">D</div>
+                            <span id="driverName" style="font-weight: 500; color: var(--text-main);">Driver</span>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item">👤 My Profile</div>
+                            <div class="dropdown-item">⚙️ Settings</div>
+                            <div class="dropdown-item danger" id="topLogoutBtn">🚪 Logout</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="table-container" style="max-width: 600px; text-align: center; padding: 3rem 2rem;">
+                <div style="margin-bottom: 2rem;">
+                    <svg width="64" height="64" fill="none" stroke="var(--primary-color)" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto; display: block; opacity: 0.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+                </div>
+                <h3>Location Broadcast</h3>
+                <p style="margin-top: 1rem; margin-bottom: 2.5rem; color: var(--text-muted); font-size: 1.05rem;">
+                    Start broadcasting your live GPS location to the central tracking system and student dashboards.
+                </p>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem;">
+                    <button id="startTripBtn" class="btn" style="background: linear-gradient(135deg, var(--success), #15803D); padding: 1rem 2.5rem; font-size: 1.1rem;">Start Trip</button>
+                    <button id="endTripBtn" class="btn btn-secondary" style="padding: 1rem 2.5rem; font-size: 1.1rem;" disabled>End Trip</button>
+                </div>
+
+                <div id="activeTripDetails" style="display: none;">
+                    <div style="background: var(--bg-color); border: 1px solid #E2E8F0; border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-around; text-align: center;">
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Trip Duration</div>
+                            <div id="tripTimer" style="font-size: 1.5rem; font-weight: bold; font-family: monospace; color: var(--primary-color);">00:00:00</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Next Stop</div>
+                            <div style="font-size: 1.2rem; font-weight: bold; color: var(--text-main);">Main Gate</div>
+                        </div>
+                    </div>
+
+                    <div id="seatControls" style="padding-top: 1.5rem; border-top: 1px solid #E2E8F0; margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--text-main);">Update Available Seats</h4>
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 1.5rem;">
+                            <button id="decSeats" class="btn btn-secondary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">-</button>
+                            <span id="seatCount" style="font-size: 2rem; font-weight: bold; color: var(--primary-color); font-family: var(--font-heading);">50</span>
+                            <button id="incSeats" class="btn btn-secondary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">+</button>
+                        </div>
+                    </div>
+                    
+                    <div id="broadcastStatus" style="margin-top: 2rem; font-weight: 600; color: var(--success); background: #DCFCE7; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #BBF7D0; margin-bottom: 2rem;">
+                        <span style="display: inline-block; width: 10px; height: 10px; background: var(--success); border-radius: 50%; margin-right: 8px; box-shadow: 0 0 8px var(--success); animation: pulse 1.5s infinite;"></span>
+                        Broadcasting live location to students...
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; width: 100%;">
+                        <button id="delayBtn" class="btn btn-secondary" style="width: 50%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: var(--warning, #F59E0B); color: var(--warning, #F59E0B);">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Report Delay
+                        </button>
+
+                        <button id="emergencyBtn" class="btn" style="background: linear-gradient(135deg, var(--danger), #B91C1C); width: 50%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.39);">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Emergency
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+    </style>
+
+    <script src="./js/api.js" type="module"></script>
+    <script src="./js/driver.js" type="module"></script>
+</body>
+</html>

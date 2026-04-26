@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Smart Campus Bus</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <!-- Leaflet Map Integration -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <h3>
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 16C4 17.1 4.9 18 6 18H6.5L6 20H8L8.5 18H15.5L16 20H18L17.5 18H18C19.1 18 20 17.1 20 16V6C20 3.8 18.2 2 16 2H8C5.8 2 4 3.8 4 6V16ZM7.5 13C6.7 13 6 12.3 6 11.5C6 10.7 6.7 10 7.5 10C8.3 10 9 10.7 9 11.5C9 12.3 8.3 13 7.5 13ZM16.5 13C15.7 13 15 12.3 15 11.5C15 10.7 15.7 10 16.5 10C17.3 10 18 10.7 18 11.5C18 12.3 17.3 13 16.5 13ZM6 6H18V8H6V6Z"/>
+                </svg>
+                LPU Smart Bus
+            </h3>
+            <ul>
+                <li><a href="#" class="active" id="nav-overview">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Overview
+                </a></li>
+                <li><a href="#" id="nav-book">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                    Book Seat
+                </a></li>
+                <li><a href="#" id="nav-my-bookings">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    My Bookings
+                </a></li>
+                <li style="margin-top: auto; padding-top: 2rem;"><a href="#" id="nav-logout" style="color: var(--danger);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </a></li>
+            </ul>
+        </aside>
+
+        <main class="dashboard-content">
+            <header class="dashboard-header">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button id="mobileMenuBtn" style="display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer;">☰</button>
+                    <h2>Overview</h2>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div class="dropdown" id="notificationDropdown">
+                        <div style="position: relative; cursor: pointer; color: var(--text-muted);" id="notificationBell">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            <span id="notifBadge" style="position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid white;"></span>
+                        </div>
+                        <div class="dropdown-menu" style="width: 300px; padding: 0.5rem;">
+                            <div style="padding: 0.5rem 1rem; border-bottom: 1px solid #E2E8F0; font-weight: bold;">Notifications</div>
+                            <div id="notifList" style="max-height: 250px; overflow-y: auto;">
+                                <div class="dropdown-item" style="flex-direction: column; align-items: flex-start; gap: 0.2rem;">
+                                    <strong>Welcome!</strong>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Your student dashboard is ready.</span>
+                                </div>
+                            </div>
+                            <div style="padding: 0.5rem; text-align: center; border-top: 1px solid #E2E8F0;">
+                                <button id="markReadBtn" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 0.85rem; font-weight: bold;">Mark all as read</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="profileDropdown">
+                        <div class="user-profile" id="profileAvatar" style="cursor: pointer;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" id="profileInitials">S</div>
+                            <span id="studentName" style="font-weight: 500; color: var(--text-main);">Student</span>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item">👤 My Profile</div>
+                            <div class="dropdown-item">⚙️ Settings</div>
+                            <div class="dropdown-item danger" id="topLogoutBtn">🚪 Logout</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Active Buses on Campus</h4>
+                    <div class="value" id="activeBusesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>My Active Bookings</h4>
+                    <div class="value" id="myBookingsCount">0</div>
+                </div>
+            </div>
+
+            <!-- Live Tracking Section -->
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Live Bus Tracking
+                    </h3>
+                    <button id="refreshBusesBtn" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Refresh
+                    </button>
+                </div>
+                <p id="liveStatus" style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #CBD5E1; border-radius: 50%; margin-right: 6px;"></span>
+                    Waiting for driver updates...
+                </p>
+                <div id="liveMap" style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 500;">
+                    Map Visualization Area
+                </div>
+            </div>
+
+            <!-- Available Routes Section -->
+            <div class="table-container" id="routesSection">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0;">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                        Available Routes
+                    </h3>
+                    <input type="text" id="searchInput" placeholder="Search destination..." style="padding: 0.5rem 1rem; border: 1px solid #E2E8F0; border-radius: var(--radius-full); width: 200px; font-family: inherit;">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Stops</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routesTableBody">
+                        <!-- Dynamic content via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- My Bookings Section (Initially hidden or shown below) -->
+            <div class="table-container" id="bookingsSection" style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1.5rem;">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    My Recent Bookings
+                </h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bus Number</th>
+                            <th>Destination</th>
+                            <th>Seat</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <!-- Dynamic content via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Confirm Reservation</h3>
+                <button class="modal-close" onclick="closeModal('bookingModal')">&times;</button>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">You are about to reserve a seat for the route to <strong id="modalDestination" style="color: var(--text-main);">...</strong>.</p>
+            <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Available Buses</div>
+                    <div id="modalBuses" style="font-weight: bold; color: var(--primary-color);">Checking...</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Est. Departure</div>
+                    <div style="font-weight: bold;">In 5 mins</div>
+                </div>
+            </div>
+            <button id="confirmBookBtn" class="btn" style="width: 100%;">Confirm Booking</button>
+        </div>
+    </div>
+    <span id="studentName">Student</span>
+
+<h1 id="activeBusesCount">0</h1>
+<h1 id="myBookingsCount">0</h1>
+
+<input type="text" id="searchInput" placeholder="Search Route">
+
+<button id="refreshBusesBtn">Refresh</button>
+
+<table>
+<tbody id="routesTableBody"></tbody>
+</table>
+
+<table>
+<tbody id="bookingsTableBody"></tbody>
+</table>
+
+<div id="liveStatus">Waiting for updates...</div>
+<div id="liveMap" style="height:300px;"></div>
+
+    <script>
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+    </script>
+    <script src="./js/api.js" type="module"></script>
+    <script src="./js/student.js" type="module"></script>
+</body>
+</html>
