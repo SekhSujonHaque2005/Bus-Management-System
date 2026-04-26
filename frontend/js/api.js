@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "/api/auth/login";
 
 export async function apiFetch(endpoint, method = "GET", body = null) {
     const options = {
@@ -83,7 +83,7 @@ export function showToast(message, type = "success") {
     }, 3000);
 }
 
-export const SOCKET_URL = "http://localhost:5000";
+export const SOCKET_URL = "/api";
 export function setupDashboardUI() {
   // Profile Dropdown
   const profileAvatar = document.getElementById('profileAvatar');
