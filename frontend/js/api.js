@@ -1,37 +1,24 @@
-const BASE_URL = "/api";
+=const API_BASE = "/api";
 
-export async function apiFetch(endpoint, method = "GET", body = null) {
-    const options = {
-        method,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    };
-
-    if (body) {
-        options.body = JSON.stringify(body);
+async function apiRequest(endpoint, method = "GET", data = null) {
+  const options = {
+    method,
+    headers: {
+      "Content-Type": "application/json"
     }
+  };
 
-    const response = await fetch(BASE_URL + endpoint, options);
+  if (data) {
+    options.body = JSON.stringify(data);
+  }
 
-    const text = await response.text();
+  const response = await fetch(API_BASE + endpoint, options);
 
-    try {
-        return JSON.parse(text);
-    } catch (error) {
-        console.error("Invalid JSON Response:", text);
-        throw new Error("Backend not responding properly");
-    }
-}
+  const text = await response.text();
 
-export function setToken(token) {
-    localStorage.setItem("token", token);
-}
-
-export function setUserData(user) {
-    localStorage.setItem("user", JSON.stringify(user));
-}
-
-export function showToast(msg) {
-    alert(msg);
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error(text);
+  }
 }
