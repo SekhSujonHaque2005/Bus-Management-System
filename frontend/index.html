@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LPU Smart Bus | Seamless Campus Mobility</title>
+    <title>SMARTBUS | Enterprise Campus Transit</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <nav id="navbar">
-        <div class="nav-container">
+    <nav>
+        <div class="nav-container" style="width: 100%; display: flex; align-items: center;">
             <a href="index.html" class="nav-brand">
-                <i class="fas fa-bus-simple"></i>
-                SmartBus
+                <i class="fas fa-bus-alt"></i>
+                SMARTBUS
             </a>
             <div class="nav-links">
-                <a href="#features" class="nav-link">Service</a>
-                <a href="#tracking" class="nav-link">Network</a>
+                <a href="#features" class="nav-link">System</a>
+                <a href="#network" class="nav-link">Infrastructure</a>
                 <div class="theme-toggle" id="themeToggle">
                     <i class="fas fa-moon"></i>
                     <i class="fas fa-sun"></i>
                 </div>
-                <a href="login.html" class="premium-btn btn-outline">Sign In</a>
-                <a href="register.html" class="premium-btn btn-fill">Get Started</a>
+                <a href="login.html" class="premium-btn btn-outline">Log In</a>
+                <a href="register.html" class="premium-btn btn-fill">Request Access</a>
             </div>
         </div>
     </nav>
 
     <main>
         <section class="hero">
-            <div class="nav-container hero-grid">
+            <div class="nav-container">
                 <div class="hero-text">
-                    <h1>Smarter Move <br>for a Smarter Campus.</h1>
-                    <p>Ditch the wait. Track your bus in real-time, reserve your seat instantly, and experience campus transit redesigned for the modern student.</p>
-                    <div style="display: flex; gap: 1.5rem;">
-                        <a href="register.html" class="premium-btn btn-fill">Start Your Journey</a>
-                        <a href="#features" class="premium-btn btn-outline">Learn More</a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <img src="premium_bus_app_hero_1777291366862.png" alt="Smart Bus Hero">
-                    <div class="hero-badge">
-                        <i class="fas fa-bolt"></i> 2.4s Response Time
+                    <p style="text-transform: uppercase; letter-spacing: 0.3em; font-weight: 700; color: var(--brand); margin-bottom: 1rem;">Version 2.0 Deployment</p>
+                    <h1>The Architecture of <br>Campus Mobility.</h1>
+                    <p>Standardizing transit efficiency through real-time telemetry, automated seat allocation, and secure enterprise-grade infrastructure.</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="register.html" class="premium-btn btn-fill">Initialize Account</a>
+                        <a href="#features" class="premium-btn btn-outline">Technical Specs</a>
                     </div>
                 </div>
             </div>
@@ -50,58 +45,59 @@
 
         <section id="features" style="padding: 100px 0;">
             <div class="nav-container">
-                <div style="margin-bottom: 5rem; text-align: center;">
-                    <h2 style="font-size: 3rem; font-family: var(--font-display);">Engineered for Excellence</h2>
-                    <p style="color: var(--text-muted);">A comprehensive suite of tools built to simplify your commute.</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;">
+                    <div class="handcrafted-card">
+                        <h3>Telemetry</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">High-precision GPS synchronization across the entire fleet with sub-second latency.</p>
+                        <div style="margin-top: 2rem; font-weight: 700; font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 1rem;">RT-GPS-01</div>
+                    </div>
+
+                    <div class="handcrafted-card" style="border-left: 0; border-right: 0;">
+                        <h3>Allocation</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Automated seat reservation protocols ensuring optimized cabin capacity and student safety.</p>
+                        <div style="margin-top: 2rem; font-weight: 700; font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 1rem;">SR-PROTO-X</div>
+                    </div>
+
+                    <div class="handcrafted-card">
+                        <h3>Validation</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Secure multi-factor authentication for every boarding event and digital ticket verification.</p>
+                        <div style="margin-top: 2rem; font-weight: 700; font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 1rem;">AUTH-SEC-4</div>
+                    </div>
                 </div>
-                
-                <div class="hero-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-                    <div class="handcrafted-card">
-                        <i class="fas fa-location-arrow fa-2x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
-                        <h3 style="margin-bottom: 1rem;">Precision Tracking</h3>
-                        <p style="color: var(--text-muted);">Real-time GPS synchronization with sub-meter accuracy across the entire campus network.</p>
-                    </div>
+            </div>
+        </section>
 
-                    <div class="handcrafted-card">
-                        <i class="fas fa-ticket fa-2x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
-                        <h3 style="margin-bottom: 1rem;">Instant Reservations</h3>
-                        <p style="color: var(--text-muted);">Guaranteed seating with our one-tap booking system. Your seat is waiting for you.</p>
-                    </div>
-
-                    <div class="handcrafted-card">
-                        <i class="fas fa-shield-check fa-2x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
-                        <h3 style="margin-bottom: 1rem;">Safety First</h3>
-                        <p style="color: var(--text-muted);">Secure verification for every trip. Travel with peace of mind in our monitored fleet.</p>
-                    </div>
+        <section style="padding: 100px 0; background: var(--bg-surface); border-top: 1px solid var(--border);">
+            <div class="nav-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+                <div>
+                    <h2 style="font-size: 3rem; text-transform: uppercase;">Standardized Reporting</h2>
+                    <p>Our system provides comprehensive data analytics for both drivers and administration, ensuring maximum operational transparency.</p>
+                    <ul style="list-style: none; margin-top: 2rem;">
+                        <li style="margin-bottom: 1rem; font-weight: 700;"><i class="fas fa-check-circle"></i> Real-time Load Balancing</li>
+                        <li style="margin-bottom: 1rem; font-weight: 700;"><i class="fas fa-check-circle"></i> Historical Route Analysis</li>
+                        <li style="margin-bottom: 1rem; font-weight: 700;"><i class="fas fa-check-circle"></i> Automated Maintenance Alerts</li>
+                    </ul>
+                </div>
+                <div style="border: 1px solid var(--border); padding: 1rem; background: white;">
+                    <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1000" alt="Fleet" style="width: 100%; filter: grayscale(100%);">
                 </div>
             </div>
         </section>
     </main>
 
-    <footer style="padding: 80px 0; border-top: 1px solid var(--border);">
-        <div class="nav-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem;">
-                <a href="index.html" class="nav-brand">SmartBus</a>
-                <p style="color: var(--text-muted);">&copy; 2026 LPU Smart Bus Management. All rights reserved.</p>
-                <div style="display: flex; gap: 1.5rem;">
-                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-twitter"></i></a>
-                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-github"></i></a>
-                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-linkedin"></i></a>
-                </div>
+    <footer style="padding: 60px 0; border-top: 1px solid var(--border); background: var(--bg-main);">
+        <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="nav-brand">SMARTBUS</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">
+                &copy; 2026 Enterprise Campus Logistics. All Rights Reserved.
+            </div>
+            <div style="display: flex; gap: 1.5rem;">
+                <a href="#" style="color: var(--text-main);"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" style="color: var(--text-main);"><i class="fab fa-twitter"></i></a>
             </div>
         </div>
     </footer>
 
     <script src="js/theme.js" type="module"></script>
-    <script>
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 20) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        });
-    </script>
 </body>
 </html>

@@ -29,10 +29,15 @@ app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/routes", require("./routes/routeRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
+app.get("/", (req, res) => {
+  res.send("Smart Bus API is running...");
+});
+
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
-    message: "Backend Running"
+    message: "Backend Running",
+    timestamp: new Date()
   });
 });
 
@@ -54,10 +59,7 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User Connected:", socket.id);
 
-  /* Driver sends live location */
   socket.on("driver-location", (data) => {
-    // data = { busId, lat, lng }
-
     io.emit("live-location", data);
   });
 
@@ -71,10 +73,9 @@ io.on("connection", (socket) => {
 ================================= */
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== "production") {
-  server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+// On Render, we must listen on 0.0.0.0
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server fully operational on port ${PORT}`);
+});
 
 module.exports = app;
