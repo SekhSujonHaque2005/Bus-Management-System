@@ -1,5 +1,5 @@
-const API_URL = window.location.origin.includes('localhost') ? "http://localhost:5001/api" : "/api";
-export const SOCKET_URL = window.location.origin.includes('localhost') ? "http://localhost:5001" : window.location.origin;
+const API_URL = "https://bus-management-system-koz5.onrender.com/api";
+export const SOCKET_URL = "https://bus-management-system-koz5.onrender.com";
 
 /* ===============================
    GENERIC API CALL
