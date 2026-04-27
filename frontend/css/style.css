@@ -140,9 +140,26 @@ nav {
     text-decoration: none;
     color: var(--text-main);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--brand);
+    border-bottom-color: var(--border);
+}
+
+.nav-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 0.9rem;
 }
 
 /* --- HERO --- */
@@ -202,11 +219,18 @@ nav {
 
 .sidebar {
     border-right: 1px solid var(--border);
-    padding: 2rem;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar ul {
+    list-style: none;
+    flex: 1;
 }
 
 .dashboard-content {
-    padding: 3rem;
+    padding: 4rem;
     background: var(--bg-surface);
 }
 
