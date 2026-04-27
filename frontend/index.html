@@ -3,340 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Campus Bus Tracking | Premium Travel</title>
-    <!-- Removed Google Fonts link from here because it's imported in style.css -->
-    <link rel="stylesheet" href="./css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>LPU Smart Bus | Seamless Campus Mobility</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
-
 <body>
-    <!-- Extra WOW Features -->
-    <button id="themeToggle" style="position: fixed; top: 80px; right: 20px; z-index: 999; background: var(--card-bg); border: 1px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); color: var(--text-main);">
-        🌓
-    </button>
-    <button id="backToTop" style="position: fixed; bottom: 20px; right: 20px; z-index: 999; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: var(--shadow-md); transition: opacity 0.3s;">
-        ↑
-    </button>
-    <nav>
-        <div class="brand">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 16C4 17.1 4.9 18 6 18H6.5L6 20H8L8.5 18H15.5L16 20H18L17.5 18H18C19.1 18 20 17.1 20 16V6C20 3.8 18.2 2 16 2H8C5.8 2 4 3.8 4 6V16ZM7.5 13C6.7 13 6 12.3 6 11.5C6 10.7 6.7 10 7.5 10C8.3 10 9 10.7 9 11.5C9 12.3 8.3 13 7.5 13ZM16.5 13C15.7 13 15 12.3 15 11.5C15 10.7 15.7 10 16.5 10C17.3 10 18 10.7 18 11.5C18 12.3 17.3 13 16.5 13ZM6 6H18V8H6V6Z"/>
-            </svg>
-            LPU Smart Bus
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-bus-simple"></i>
+                SmartBus
+            </a>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Service</a>
+                <a href="#tracking" class="nav-link">Network</a>
+                <div class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
+                </div>
+                <a href="login.html" class="premium-btn btn-outline">Sign In</a>
+                <a href="register.html" class="premium-btn btn-fill">Get Started</a>
+            </div>
         </div>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#testimonials">Testimonials</a></li>
-            <li><a href="login.html">Login</a></li>
-            <li><a href="register.html" class="btn">Get Started</a></li>
-        </ul>
     </nav>
 
-    <header class="hero">
-        <h1>Campus Travel, <br><span id="typing-text" style="color: var(--primary-color);">Reimagined.</span><span class="cursor">|</span></h1>
-        <p>Real-time bus tracking, instant seat reservations, and seamless navigation for the modern student. Never miss your bus again.</p>
-        <div class="cta-group">
-            <a href="register.html" class="btn">Get Started</a>
-            <a href="#features" class="btn btn-secondary">Learn More</a>
-        </div>
-        
-        <div class="bus-animation-container">
-            <div class="animated-bus">🚌</div>
-        </div>
-    </header>
-
-    <section id="stats" style="padding: 4rem 5%; background: white; text-align: center; border-bottom: 1px solid #E2E8F0;">
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem;">
-            <div class="animate-on-scroll">
-                <div style="font-size: 3rem; font-weight: 800; color: var(--primary-color); font-family: var(--font-heading);"><span class="counter" data-target="5000">0</span>+</div>
-                <div style="color: var(--text-muted); font-size: 1.1rem;">Students Registered</div>
-            </div>
-            <div class="animate-on-scroll" style="transition-delay: 0.2s;">
-                <div style="font-size: 3rem; font-weight: 800; color: var(--accent); font-family: var(--font-heading);"><span class="counter" data-target="24">0</span></div>
-                <div style="color: var(--text-muted); font-size: 1.1rem;">Active Routes</div>
-            </div>
-            <div class="animate-on-scroll" style="transition-delay: 0.4s;">
-                <div style="font-size: 3rem; font-weight: 800; color: var(--secondary-color); font-family: var(--font-heading);"><span class="counter" data-target="98">0</span>%</div>
-                <div style="color: var(--text-muted); font-size: 1.1rem;">On-time Arrivals</div>
-            </div>
-        </div>
-    </section>
-
-    <section id="features" class="features">
-        <h2 class="section-title">Why choose Smart Bus?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">📍</div>
-                <h3>Live Tracking</h3>
-                <p>Track your campus bus in real-time using Socket.IO technology. Know exactly when to leave your hostel.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎫</div>
-                <h3>Seat Reservation</h3>
-                <p>Book your seat in advance with just a tap. Guarantee your spot during rush hours with no hassle.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔔</div>
-                <h3>Smart Alerts</h3>
-                <p>Get notified when the bus is approaching your stop or if there are sudden delays on the route.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Admin Analytics</h3>
-                <p>Detailed insights on route demands and bus utilization to optimize the entire campus fleet.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="testimonials" class="testimonials">
-        <h2 class="section-title">Loved by Students</h2>
-        <div class="testimonial-grid">
-            <div class="testimonial-card">
-                <p>Tracking the bus live has literally saved me from running across campus every morning. It's so accurate!</p>
-                <div class="testimonial-author">
-                    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%234F46E5'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='40'>JD</text></svg>" alt="Student">
-                    <div>
-                        <h4>John Doe</h4>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;">B.Tech CSE</span>
+    <main>
+        <section class="hero">
+            <div class="nav-container hero-grid">
+                <div class="hero-text">
+                    <h1>Smarter Move <br>for a Smarter Campus.</h1>
+                    <p>Ditch the wait. Track your bus in real-time, reserve your seat instantly, and experience campus transit redesigned for the modern student.</p>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="register.html" class="premium-btn btn-fill">Start Your Journey</a>
+                        <a href="#features" class="premium-btn btn-outline">Learn More</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="premium_bus_app_hero_1777291366862.png" alt="Smart Bus Hero">
+                    <div class="hero-badge">
+                        <i class="fas fa-bolt"></i> 2.4s Response Time
                     </div>
                 </div>
             </div>
-            <div class="testimonial-card">
-                <p>The seat booking feature is a lifesaver. I always get a seat now during peak hours. Great UI!</p>
-                <div class="testimonial-author">
-                    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2306B6D4'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='40'>SM</text></svg>" alt="Student">
-                    <div>
-                        <h4>Sarah Malik</h4>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;">MBA Student</span>
+        </section>
+
+        <section id="features" style="padding: 100px 0;">
+            <div class="nav-container">
+                <div style="margin-bottom: 5rem; text-align: center;">
+                    <h2 style="font-size: 3rem; font-family: var(--font-display);">Engineered for Excellence</h2>
+                    <p style="color: var(--text-muted);">A comprehensive suite of tools built to simplify your commute.</p>
+                </div>
+                
+                <div class="hero-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                    <div class="handcrafted-card">
+                        <i class="fas fa-location-arrow fa-2x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
+                        <h3 style="margin-bottom: 1rem;">Precision Tracking</h3>
+                        <p style="color: var(--text-muted);">Real-time GPS synchronization with sub-meter accuracy across the entire campus network.</p>
+                    </div>
+
+                    <div class="handcrafted-card">
+                        <i class="fas fa-ticket fa-2x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
+                        <h3 style="margin-bottom: 1rem;">Instant Reservations</h3>
+                        <p style="color: var(--text-muted);">Guaranteed seating with our one-tap booking system. Your seat is waiting for you.</p>
+                    </div>
+
+                    <div class="handcrafted-card">
+                        <i class="fas fa-shield-check fa-2x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
+                        <h3 style="margin-bottom: 1rem;">Safety First</h3>
+                        <p style="color: var(--text-muted);">Secure verification for every trip. Travel with peace of mind in our monitored fleet.</p>
                     </div>
                 </div>
             </div>
-            <div class="testimonial-card">
-                <p>Extremely fast and responsive. I love the new modern design, it feels like a premium app.</p>
-                <div class="testimonial-author">
-                    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%237C3AED'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='40'>RK</text></svg>" alt="Student">
-                    <div>
-                        <h4>Rahul Kumar</h4>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;">Design Department</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <section id="faq" class="faq-section">
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div class="faq-item animate-on-scroll">
-                <div class="faq-question">
-                    How do I reserve a seat?
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transition: transform 0.3s;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-                <div class="faq-answer">
-                    Simply log into your student dashboard, view the available active routes, and click "Book Seat". You'll get an instant confirmation.
-                </div>
-            </div>
-            <div class="faq-item animate-on-scroll" style="transition-delay: 0.1s;">
-                <div class="faq-question">
-                    Is live tracking accurate?
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transition: transform 0.3s;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-                <div class="faq-answer">
-                    Yes! Our drivers use GPS broadcasting directly from their dashboard, updating the live map every few seconds.
+    <footer style="padding: 80px 0; border-top: 1px solid var(--border);">
+        <div class="nav-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem;">
+                <a href="index.html" class="nav-brand">SmartBus</a>
+                <p style="color: var(--text-muted);">&copy; 2026 LPU Smart Bus Management. All rights reserved.</p>
+                <div style="display: flex; gap: 1.5rem;">
+                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-github"></i></a>
+                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-linkedin"></i></a>
                 </div>
             </div>
-            <div class="faq-item animate-on-scroll" style="transition-delay: 0.2s;">
-                <div class="faq-question">
-                    What happens if a bus is full?
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transition: transform 0.3s;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-                <div class="faq-answer">
-                    The system will notify you that no seats are available and suggest the next available bus on that route.
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-col">
-                <div class="brand" style="color: white; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px; fill: white;">
-                        <path d="M4 16C4 17.1 4.9 18 6 18H6.5L6 20H8L8.5 18H15.5L16 20H18L17.5 18H18C19.1 18 20 17.1 20 16V6C20 3.8 18.2 2 16 2H8C5.8 2 4 3.8 4 6V16ZM7.5 13C6.7 13 6 12.3 6 11.5C6 10.7 6.7 10 7.5 10C8.3 10 9 10.7 9 11.5C9 12.3 8.3 13 7.5 13ZM16.5 13C15.7 13 15 12.3 15 11.5C15 10.7 15.7 10 16.5 10C17.3 10 18 10.7 18 11.5C18 12.3 17.3 13 16.5 13ZM6 6H18V8H6V6Z"/>
-                    </svg>
-                    LPU Smart Bus
-                </div>
-                <p style="color: #94A3B8; font-size: 0.9rem;">Modernizing campus transportation with real-time tracking and seat reservations.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Sign Up</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Contact Us</h4>
-                <ul>
-                    <li><a href="#">Support Center</a></li>
-                    <li><a href="#">Report an Issue</a></li>
-                    <li><a href="#">Feedback</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 Smart Campus Bus System. All rights reserved. Built for INT219 & INT222.
         </div>
     </footer>
 
-    <script src="./js/api.js" type="module"></script>
+    <script src="js/theme.js" type="module"></script>
     <script>
-        // Scroll Animation Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        
-                        // If it's a counter, animate it
-                        const counters = entry.target.querySelectorAll('.counter');
-                        counters.forEach(counter => {
-                            const updateCount = () => {
-                                const target = +counter.getAttribute('data-target');
-                                const count = +counter.innerText;
-                                const inc = target / 50;
-
-                                if (count < target) {
-                                    counter.innerText = Math.ceil(count + inc);
-                                    setTimeout(updateCount, 40);
-                                } else {
-                                    counter.innerText = target;
-                                }
-                            };
-                            updateCount();
-                        });
-
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            // Add class to elements
-            document.querySelectorAll('.feature-card, .testimonial-card').forEach((el, index) => {
-                el.classList.add('animate-on-scroll');
-                el.style.transitionDelay = `${(index % 4) * 0.1}s`;
-                observer.observe(el);
-            });
-            
-            document.querySelectorAll('#stats .animate-on-scroll, #faq .animate-on-scroll').forEach(el => observer.observe(el));
-
-            // FAQ Toggle Logic
-            document.querySelectorAll('.faq-question').forEach(question => {
-                question.addEventListener('click', () => {
-                    const item = question.parentElement;
-                    const isActive = item.classList.contains('active');
-                    
-                    document.querySelectorAll('.faq-item').forEach(faq => {
-                        faq.classList.remove('active');
-                    });
-
-                    if (!isActive) {
-                        item.classList.add('active');
-                    }
-                });
-            });
-
-            // Extra WOW: Typing Effect
-            const texts = ["Reimagined.", "Made Simple.", "Connected.", "Smarter."];
-            let textIndex = 0;
-            let charIndex = 0;
-            let isDeleting = false;
-            const typingSpan = document.getElementById('typing-text');
-            
-            function typeEffect() {
-                const currentText = texts[textIndex];
-                if (isDeleting) {
-                    typingSpan.textContent = currentText.substring(0, charIndex - 1);
-                    charIndex--;
-                } else {
-                    typingSpan.textContent = currentText.substring(0, charIndex + 1);
-                    charIndex++;
-                }
-
-                let speed = isDeleting ? 50 : 100;
-
-                if (!isDeleting && charIndex === currentText.length) {
-                    speed = 2000;
-                    isDeleting = true;
-                } else if (isDeleting && charIndex === 0) {
-                    isDeleting = false;
-                    textIndex = (textIndex + 1) % texts.length;
-                    speed = 500;
-                }
-                setTimeout(typeEffect, speed);
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 20) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
             }
-            setTimeout(typeEffect, 1000);
-
-            // Extra WOW: Dark Mode Toggle
-            const themeToggle = document.getElementById('themeToggle');
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-theme');
-                const isDark = document.body.classList.contains('dark-theme');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            });
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-theme');
-            }
-
-            // Extra WOW: Back to Top
-            const backToTopBtn = document.getElementById('backToTop');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
-                    backToTopBtn.style.display = 'flex';
-                } else {
-                    backToTopBtn.style.display = 'none';
-                }
-            });
-            backToTopBtn.addEventListener('click', () => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        });
-    </script>
-    <script type="module">
-        import { getToken, getUserData } from "./js/api.js";
-
-        function redirectByRole() {
-            const token = getToken();
-            const user = getUserData();
-
-            if (!token || !user) return;
-
-            if (user.role === "student") {
-                window.location.href = "student-dashboard.html";
-            } else if (user.role === "admin") {
-                window.location.href = "admin-dashboard.html";
-            } else if (user.role === "driver") {
-                window.location.href = "driver-dashboard.html";
-            }
-        }
-
-        redirectByRole();
-
-        document.querySelectorAll('a[href="register.html"], a[href="login.html"]')
-        .forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const token = getToken();
-                const user = getUserData();
-
-                if (token && user) {
-                    e.preventDefault();
-                    redirectByRole();
-                }
-            });
         });
     </script>
 </body>

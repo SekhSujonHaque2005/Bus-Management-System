@@ -3,203 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Smart Campus Bus</title>
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/dashboard.css">
+    <title>Admin Dashboard | Smart Bus System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+
     <div class="dashboard-wrapper">
         <aside class="sidebar">
-            <h3>
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 16C4 17.1 4.9 18 6 18H6.5L6 20H8L8.5 18H15.5L16 20H18L17.5 18H18C19.1 18 20 17.1 20 16V6C20 3.8 18.2 2 16 2H8C5.8 2 4 3.8 4 6V16ZM7.5 13C6.7 13 6 12.3 6 11.5C6 10.7 6.7 10 7.5 10C8.3 10 9 10.7 9 11.5C9 12.3 8.3 13 7.5 13ZM16.5 13C15.7 13 15 12.3 15 11.5C15 10.7 15.7 10 16.5 10C17.3 10 18 10.7 18 11.5C18 12.3 17.3 13 16.5 13ZM6 6H18V8H6V6Z"/>
-                </svg>
-                Admin Panel
-            </h3>
+            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
+                <i class="fas fa-user-shield"></i> Admin Panel
+            </div>
             <ul>
-                <li><a href="#" class="active">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    Overview
-                </a></li>
-                <li><a href="#">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    Manage Buses
-                </a></li>
-                <li><a href="#">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                    Manage Routes
-                </a></li>
-                <li><a href="#usersSection">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Manage Users
-                </a></li>
-                <li style="margin-top: auto; padding-top: 2rem;"><a href="#" id="nav-logout" style="color: var(--danger);">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    Logout
-                </a></li>
+                <li><a href="admin-dashboard.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                <li><a href="admin-manage-buses.html"><i class="fas fa-bus"></i> Manage Buses</a></li>
+                <li><a href="admin-manage-routes.html"><i class="fas fa-route"></i> Manage Routes</a></li>
+                <li><a href="admin-manage-users.html"><i class="fas fa-users"></i> Manage Users</a></li>
+                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
             <header class="dashboard-header">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button id="mobileMenuBtn" style="display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer;">☰</button>
-                    <h2>Admin Dashboard</h2>
-                </div>
-                <div style="display: flex; align-items: center; gap: 1.5rem;">
-                    <div class="dropdown" id="notificationDropdown">
-                        <div style="position: relative; cursor: pointer; color: var(--text-muted);" id="notificationBell">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            <span id="notifBadge" style="position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid white;"></span>
-                        </div>
-                        <div class="dropdown-menu" style="width: 300px; padding: 0.5rem;">
-                            <div style="padding: 0.5rem 1rem; border-bottom: 1px solid #E2E8F0; font-weight: bold;">Notifications</div>
-                            <div id="notifList" style="max-height: 250px; overflow-y: auto;">
-                                <div class="dropdown-item" style="flex-direction: column; align-items: flex-start; gap: 0.2rem;">
-                                    <strong>System Alert</strong>
-                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Admin dashboard active.</span>
-                                </div>
-                            </div>
-                            <div style="padding: 0.5rem; text-align: center; border-top: 1px solid #E2E8F0;">
-                                <button id="markReadBtn" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 0.85rem; font-weight: bold;">Mark all as read</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dropdown" id="profileDropdown">
-                        <div class="user-profile" id="profileAvatar" style="cursor: pointer;">
-                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--secondary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;" id="profileInitials">A</div>
-                            <span id="adminName" style="font-weight: 500; color: var(--text-main);">Administrator</span>
-                        </div>
-                        <div class="dropdown-menu">
-                            <div class="dropdown-item">👤 My Profile</div>
-                            <div class="dropdown-item">⚙️ Settings</div>
-                            <div class="dropdown-item danger" id="topLogoutBtn">🚪 Logout</div>
-                        </div>
-                    </div>
+                <h2>Platform Analytics</h2>
+                <div class="user-profile">
+                    <span id="adminName">Admin</span>
+                    <i class="fas fa-shield-halved fa-lg"></i>
                 </div>
             </header>
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h4>Total Buses</h4>
-                    <div class="value" id="totalBuses">0</div>
+                    <h4>Total Users</h4>
+                    <div class="value" id="totalUsersCount">0</div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Active accounts</p>
                 </div>
                 <div class="stat-card">
-                    <h4>Total Routes</h4>
-                    <div class="value" id="totalRoutes">0</div>
+                    <h4>Active Buses</h4>
+                    <div class="value" id="activeBusesCount">0</div>
+                    <p style="font-size: 0.8rem; color: var(--success);">In service</p>
                 </div>
                 <div class="stat-card">
-                    <h4>Active Bookings</h4>
-                    <div class="value" id="totalBookings">0</div>
+                    <h4>Total Bookings</h4>
+                    <div class="value" id="totalBookingsCount">0</div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Lifetime reservations</p>
                 </div>
             </div>
 
-            <!-- Analytics Chart -->
-            <div class="table-container" style="margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="margin: 0;">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
-                        Bus Utilization
-                    </h3>
-                    <button id="exportCsvBtn" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Export CSV
-                    </button>
-                </div>
-                <div style="height: 300px; width: 100%;">
-                    <canvas id="utilizationChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Management Forms Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-                <!-- Add Bus Form -->
-                <div class="table-container" style="margin: 0;">
-                    <h3>
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        Add New Bus
-                    </h3>
-                    <form id="addBusForm" style="margin-top: 1rem;">
-                        <div class="form-group" style="background: white; border-radius: var(--radius-md);">
-                            <input type="text" id="busNumber" required placeholder="Bus Number">
-                            <label for="busNumber">Bus Number (e.g. PB08-1234)</label>
-                        </div>
-                        <div class="form-group" style="background: white; border-radius: var(--radius-md);">
-                            <input type="number" id="capacity" required placeholder="Capacity">
-                            <label for="capacity">Seating Capacity</label>
-                        </div>
-                        <button type="submit" class="btn" style="width: 100%;">Add Bus</button>
-                    </form>
-                </div>
-
-                <!-- Add Route Form -->
-                <div class="table-container" style="margin: 0;">
-                    <h3>
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                        Add New Route
-                    </h3>
-                    <form id="addRouteForm" style="margin-top: 1rem;">
-                        <div class="form-group" style="background: white; border-radius: var(--radius-md);">
-                            <input type="text" id="routeSource" required placeholder="Source">
-                            <label for="routeSource">Source (e.g. Main Gate)</label>
-                        </div>
-                        <div class="form-group" style="background: white; border-radius: var(--radius-md);">
-                            <input type="text" id="routeDest" required placeholder="Destination">
-                            <label for="routeDest">Destination (e.g. Block 32)</label>
-                        </div>
-                        <button type="submit" class="btn btn-secondary" style="width: 100%; border-color: var(--primary-color); color: var(--primary-color);">Add Route</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Manage Buses -->
             <div class="table-container">
-                <h3>
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    Fleet Overview
-                </h3>
+                <h3>Recent System Activity</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Bus Number</th>
-                            <th>Capacity</th>
-                            <th>Available Seats</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Timestamp</th>
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody id="busesTableBody">
-                        <!-- Dynamic content -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Manage Users -->
-            <div class="table-container" id="usersSection" style="margin-top: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0;">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        Users Directory
-                    </h3>
-                    <input type="text" id="searchUsers" placeholder="Search users by name/email..." style="padding: 0.5rem 1rem; border: 1px solid #E2E8F0; border-radius: var(--radius-full); width: 250px; font-family: inherit;">
-                </div>
-                <table>
-                    <thead>
+                    <tbody id="activityTableBody">
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
+                            <td>Sekh Sujon Haque</td>
+                            <td>New Booking</td>
+                            <td>Just now</td>
+                            <td><span class="badge active">Success</span></td>
                         </tr>
-                    </thead>
-                    <tbody id="usersTableBody">
-                        <!-- Dynamic content -->
+                        <tr>
+                            <td>System</td>
+                            <td>Route Update</td>
+                            <td>5 mins ago</td>
+                            <td><span class="badge active">Completed</span></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </main>
     </div>
 
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="./js/admin.js"></script>
+    <script type="module">
+        import { apiFetch, logout, getUserData } from './js/api.js';
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        const user = getUserData();
+        if (user) document.getElementById('adminName').textContent = user.name;
+
+        async function loadStats() {
+            try {
+                const buses = await apiFetch('/buses');
+                document.getElementById('activeBusesCount').textContent = buses.buses.length;
+
+                const users = await apiFetch('/admin/users'); // Assuming this endpoint exists or will be created
+                document.getElementById('totalUsersCount').textContent = users.users.length;
+
+                const bookings = await apiFetch('/admin/bookings'); // Assuming this exists
+                document.getElementById('totalBookingsCount').textContent = bookings.bookings.length;
+            } catch (err) {
+                console.error('Error loading admin stats:', err);
+            }
+        }
+
+        loadStats();
+    </script>
 </body>
 </html>

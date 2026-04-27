@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Routes | Admin Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
+                <i class="fas fa-user-shield"></i> Admin Panel
+            </div>
+            <ul>
+                <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                <li><a href="admin-manage-buses.html"><i class="fas fa-bus"></i> Manage Buses</a></li>
+                <li><a href="admin-manage-routes.html" class="active"><i class="fas fa-route"></i> Manage Routes</a></li>
+                <li><a href="admin-manage-users.html"><i class="fas fa-users"></i> Manage Users</a></li>
+                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="dashboard-content">
+            <header class="dashboard-header">
+                <h2>Campus Routes</h2>
+                <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Route</button>
+            </header>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Stops</th>
+                            <th>Estimated Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routesTableBody">
+                        <!-- Rows injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Route Modal -->
+    <div id="routeModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Route</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <form id="routeForm">
+                <div class="input-group">
+                    <label>Source</label>
+                    <input type="text" id="source" required placeholder="e.g. Block 32">
+                </div>
+                <div class="input-group">
+                    <label>Destination</label>
+                    <input type="text" id="destination" required placeholder="e.g. Main Gate">
+                </div>
+                <div class="input-group">
+                    <label>Stops (Comma separated)</label>
+                    <input type="text" id="stops" required placeholder="Stop A, Stop B, Stop C">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Route</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { apiFetch, showToast, logout } from './js/api.js';
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        async function loadRoutes() {
+            try {
+                const result = await apiFetch('/routes');
+                const tbody = document.getElementById('routesTableBody');
+                tbody.innerHTML = '';
+
+                result.routes.forEach(route => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${route.source}</td>
+                        <td><strong>${route.destination}</strong></td>
+                        <td>${route.stops.join(', ')}</td>
+                        <td>30 mins</td>
+                        <td>
+                            <button class="btn btn-secondary btn-delete" data-id="${route._id}" style="color: var(--error);"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        if(confirm('Delete this route?')) {
+                            try {
+                                await apiFetch(`/routes/${e.target.closest('button').dataset.id}`, 'DELETE');
+                                showToast('Route removed', 'success');
+                                loadRoutes();
+                            } catch (err) {
+                                showToast(err.message, 'error');
+                            }
+                        }
+                    });
+                });
+
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        window.openAddModal = () => {
+            document.getElementById('routeModal').classList.add('active');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('routeModal').classList.remove('active');
+        };
+
+        document.getElementById('routeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                source: document.getElementById('source').value,
+                destination: document.getElementById('destination').value,
+                stops: document.getElementById('stops').value.split(',').map(s => s.trim())
+            };
+
+            try {
+                await apiFetch('/routes', 'POST', data);
+                showToast('Route created successfully', 'success');
+                closeModal();
+                loadRoutes();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+
+        loadRoutes();
+    </script>
+</body>
+</html>

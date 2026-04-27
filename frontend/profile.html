@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | LPU Smart Bus</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
+                <i class="fas fa-bus"></i> Smart Bus
+            </div>
+            <ul>
+                <li><a href="student-dashboard.html"><i class="fas fa-home"></i> Overview</a></li>
+                <li><a href="book-seat.html"><i class="fas fa-plus-circle"></i> Book Seat</a></li>
+                <li><a href="my-bookings.html"><i class="fas fa-history"></i> My Bookings</a></li>
+                <li><a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="dashboard-content">
+            <header class="dashboard-header">
+                <h2>Your Profile</h2>
+            </header>
+
+            <div class="table-container" style="max-width: 600px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 100px; height: 100px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2.5rem;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 id="displayUserName">User Name</h3>
+                    <p id="displayUserRole" style="text-transform: capitalize; color: var(--text-muted);">Role</p>
+                </div>
+
+                <form id="profileForm">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="profileEmail" readonly style="background: #f1f5f9; cursor: not-allowed;">
+                        <small style="color: var(--text-muted);">Email cannot be changed.</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Update Profile</button>
+                </form>
+
+                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+                    <h4>Security</h4>
+                    <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem; color: var(--error);" id="deleteAccBtn">Delete Account</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { apiFetch, showToast, logout, getUserData, setUserData } from './js/api.js';
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        const user = getUserData();
+        if (user) {
+            document.getElementById('profileName').value = user.name;
+            document.getElementById('profileEmail').value = user.email;
+            document.getElementById('displayUserName').textContent = user.name;
+            document.getElementById('displayUserRole').textContent = user.role;
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('profileName').value;
+            
+            try {
+                const result = await apiFetch('/auth/profile', 'PUT', { name });
+                setUserData(result.user);
+                document.getElementById('displayUserName').textContent = result.user.name;
+                showToast('Profile updated successfully', 'success');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+
+        document.getElementById('deleteAccBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure? This action is permanent and will delete all your booking history.')) {
+                try {
+                    await apiFetch('/auth/profile', 'DELETE');
+                    showToast('Account deleted', 'success');
+                    logout();
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -3,75 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Smart Campus Bus</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <title>Create Account | LPU Smart Bus</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <nav>
-        <div class="brand">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 16C4 17.1 4.9 18 6 18H6.5L6 20H8L8.5 18H15.5L16 20H18L17.5 18H18C19.1 18 20 17.1 20 16V6C20 3.8 18.2 2 16 2H8C5.8 2 4 3.8 4 6V16ZM7.5 13C6.7 13 6 12.3 6 11.5C6 10.7 6.7 10 7.5 10C8.3 10 9 10.7 9 11.5C9 12.3 8.3 13 7.5 13ZM16.5 13C15.7 13 15 12.3 15 11.5C15 10.7 15.7 10 16.5 10C17.3 10 18 10.7 18 11.5C18 12.3 17.3 13 16.5 13ZM6 6H18V8H6V6Z"/>
-            </svg>
-            <a href="index.html" style="color: inherit;">LPU Smart Bus</a>
-        </div>
-        <ul>
-            <li><a href="login.html" class="btn btn-secondary">Login</a></li>
-        </ul>
-    </nav>
 
-    <main class="auth-split">
-        <div class="auth-split-left" style="background: radial-gradient(circle at center, #06B6D4, #0891B2);">
-            <h1>Join the Smart Fleet</h1>
-            <p>Create your account today to experience next-generation campus transportation.</p>
-        </div>
-        <div class="auth-split-right">
-            <div class="auth-card" style="box-shadow: none; border: none; background: transparent; padding: 0;">
-                <h2>Create an Account</h2>
-                <form id="registerForm">
-                    <div class="form-group">
-                        <input type="text" id="name" required placeholder="Name">
-                        <label for="name">Full Name</label>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" id="email" required placeholder="Email">
-                        <label for="email">Email Address</label>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="password" required placeholder="Password">
-                        <label for="password">Password</label>
-                        <div class="password-toggle" onclick="togglePassword('password')">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <select id="role" required>
-                            <option value="" disabled selected hidden>Select Role</option>
-                            <option value="student">Student</option>
-                            <option value="driver">Driver</option>
-                            <option value="admin">Administrator</option>
-                        </select>
-                        <label for="role">I am a</label>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Create Account</button>
-                </form>
-                <div class="auth-footer">
-                    Already have an account? <a href="login.html">Login here</a>
+    <div class="auth-container">
+        <div class="auth-card animate-up">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <a href="index.html" class="logo" style="justify-content: center; margin-bottom: 1rem;">
+                    <i class="fas fa-bus"></i> LPU Smart Bus
+                </a>
+                <h2 style="font-family: var(--font-display); font-size: 1.8rem;">Join the Smart Fleet</h2>
+                <p style="color: var(--text-muted);">Experience next-generation campus transit.</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" required placeholder="Sekh Sujon Haque">
                 </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <div class="input-group">
+                    <label>Account Type</label>
+                    <select id="role" required style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid rgba(0,0,0,0.1);">
+                        <option value="student">Student</option>
+                        <option value="driver">Driver</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create Account</button>
+            </form>
+
+            <div style="text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--text-muted);">
+                Already have an account? <a href="login.html" style="color: var(--primary); font-weight: 700;">Login here</a>
             </div>
         </div>
-    </main>
+    </div>
 
-    <script>
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-            } else {
-                input.type = "password";
+    <script type="module">
+        import { apiFetch, showToast } from './js/api.js';
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
+
+            try {
+                await apiFetch('/auth/register', 'POST', data);
+                showToast('Registration Successful! Redirecting...', 'success');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+            } catch (err) {
+                showToast(err.message, 'error');
             }
-        }
+        });
     </script>
-    <script src="./js/api.js" type="module"></script>
-    <script src="./js/auth.js" type="module"></script>
 </body>
 </html>
