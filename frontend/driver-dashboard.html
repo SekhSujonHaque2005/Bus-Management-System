@@ -39,15 +39,23 @@
                 <p style="color: var(--text-muted); font-weight: 700;">LOGISTICS OPERATOR: <span id="driverName" style="color: var(--text-main);">DRIVER</span></p>
             </header>
 
-            <div class="handcrafted-card" style="text-align: center; padding: 5rem; background: var(--bg-main);">
+            <div class="handcrafted-card" style="text-align: center; padding: 4rem; background: var(--bg-main);">
                 <h3 style="font-size: 1.5rem; text-transform: uppercase; margin-bottom: 1rem;">Telemetry Uplink</h3>
-                <p style="color: var(--text-muted); margin-bottom: 3rem; font-weight: 700;">ACTIVATE GPS PROTOCOL TO COMMENCE LIVE TRACKING</p>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 700;">SELECT UNIT TO COMMENCE LIVE TRACKING</p>
                 
+                <div style="max-width: 400px; margin: 0 auto 2rem;">
+                    <label style="display: block; font-size: 0.7rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Assigned Unit ID</label>
+                    <select id="busSelect" style="width: 100%; padding: 1rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1.1rem; background: var(--bg-surface); color: var(--text-main);">
+                        <option value="">-- SELECT BUS --</option>
+                    </select>
+                </div>
+
                 <button class="premium-btn btn-fill" id="startTripBtn" style="font-size: 1.2rem; padding: 1.5rem 3rem;">INITIALIZE UPLINK</button>
                 <button class="premium-btn btn-outline" id="stopTripBtn" style="display: none; font-size: 1.2rem; padding: 1.5rem 3rem; color: #dc2626; border-color: #dc2626;">TERMINATE UPLINK</button>
 
                 <div id="statusInfo" style="margin-top: 3rem; display: none;">
                     <span style="background: var(--brand); color: white; padding: 0.8rem 2rem; font-weight: 900; letter-spacing: 0.1em;">LIVE TELEMETRY ACTIVE</span>
+                    <p id="latlngDisplay" style="margin-top: 1.5rem; font-family: monospace; font-size: 0.8rem; color: var(--text-muted);"></p>
                 </div>
             </div>
         </main>
@@ -55,31 +63,56 @@
 
     <script src="js/theme.js" type="module"></script>
     <script type="module">
-        import { apiFetch, logout, getUserData } from './js/api.js';
+        import { apiFetch, logout, getUserData, showToast } from './js/api.js';
         document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
         const user = getUserData();
         if (user) document.getElementById('driverName').textContent = user.name.toUpperCase();
 
         let watchId = null;
 
-        document.getElementById('startTripBtn').addEventListener('click', () => {
+        async function loadBuses() {
+            try {
+                const result = await apiFetch('/buses');
+                const select = document.getElementById('busSelect');
+                result.buses.forEach(bus => {
+                    const opt = document.createElement('option');
+                    opt.value = bus._id;
+                    opt.textContent = `UNIT ${bus.busNumber} (${bus.busType})`;
+                    select.appendChild(opt);
+                });
+            } catch (err) {}
+        }
+        loadBuses();
+
+        document.getElementById('startTripBtn').addEventListener('click', async () => {
+            const busId = document.getElementById('busSelect').value;
+            if (!busId) {
+                showToast("SELECT UNIT BEFORE INITIALIZATION", "error");
+                return;
+            }
+
             if ("geolocation" in navigator) {
                 document.getElementById('startTripBtn').style.display = 'none';
+                document.getElementById('busSelect').disabled = true;
                 document.getElementById('stopTripBtn').style.display = 'inline-flex';
                 document.getElementById('statusInfo').style.display = 'block';
 
                 watchId = navigator.geolocation.watchPosition(async (position) => {
                     const { latitude, longitude } = position.coords;
+                    document.getElementById('latlngDisplay').textContent = `LAT: ${latitude.toFixed(6)} | LNG: ${longitude.toFixed(6)}`;
                     try {
-                        await apiFetch('/buses/location', 'PATCH', { coordinates: [latitude, longitude] });
+                        await apiFetch(`/buses/location/${busId}`, 'PATCH', { lat: latitude, lng: longitude });
                     } catch (err) {}
-                });
+                }, (err) => {
+                    showToast("GPS ACCESS DENIED", "error");
+                }, { enableHighAccuracy: true });
             }
         });
 
         document.getElementById('stopTripBtn').addEventListener('click', () => {
             if (watchId) navigator.geolocation.clearWatch(watchId);
             document.getElementById('startTripBtn').style.display = 'inline-flex';
+            document.getElementById('busSelect').disabled = false;
             document.getElementById('stopTripBtn').style.display = 'none';
             document.getElementById('statusInfo').style.display = 'none';
         });

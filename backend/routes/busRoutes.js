@@ -5,16 +5,29 @@ const {
   getBuses,
   createBus,
   updateBus,
-  deleteBus
+  deleteBus,
+  getBusLocation,
+  updateBusLocation
 } = require("../controllers/busController");
 
 const { protect } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
 
 /* ===============================
-   PUBLIC / STUDENT
+   PUBLIC / SHARED
 ================================= */
 router.get("/", getBuses);
+router.get("/location/:id", getBusLocation);
+
+/* ===============================
+   DRIVER & ADMIN
+================================= */
+router.patch(
+  "/location/:id",
+  protect,
+  authorize("driver", "admin"),
+  updateBusLocation
+);
 
 /* ===============================
    ADMIN ONLY
