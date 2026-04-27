@@ -79,9 +79,14 @@
                         const routeId = e.target.dataset.id;
                         try {
                             const buses = await apiFetch(`/buses/route/${routeId}`);
-                            if (buses.buses.length === 0) throw new Error('NO UNITS AVAILABLE ON THIS ROUTE');
+                            if (!buses.buses || buses.buses.length === 0) throw new Error('NO UNITS AVAILABLE ON THIS ROUTE');
                             
-                            await apiFetch('/bookings', 'POST', { busId: buses.buses[0]._id });
+                            await apiFetch('/bookings', 'POST', { 
+                                busId: buses.buses[0]._id,
+                                routeId: routeId,
+                                seatNumber: Math.floor(Math.random() * 40) + 1
+                            });
+                            
                             showToast('ALLOCATION SUCCESSFUL', 'success');
                             setTimeout(() => window.location.href = 'my-bookings.html', 1000);
                         } catch (err) {
