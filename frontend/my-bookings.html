@@ -3,98 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bookings | LPU Smart Bus</title>
+    <title>History | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
         <aside class="sidebar">
-            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
-                <i class="fas fa-bus"></i> Smart Bus
-            </div>
-            <ul>
-                <li><a href="student-dashboard.html"><i class="fas fa-home"></i> Overview</a></li>
-                <li><a href="book-seat.html"><i class="fas fa-plus-circle"></i> Book Seat</a></li>
-                <li><a href="my-bookings.html" class="active"><i class="fas fa-history"></i> My Bookings</a></li>
-                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
-                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;">
+                <i class="fas fa-bus-alt"></i> SMARTBUS
+            </a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="student-dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> SYSTEM OVERVIEW</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="book-seat.html" class="nav-link"><i class="fas fa-plus-square"></i> INITIALIZE BOOKING</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="my-bookings.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-history"></i> LOG HISTORY</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="profile.html" class="nav-link"><i class="fas fa-user-shield"></i> ACCOUNT PROFILE</a></li>
+                
+                <li style="margin-top: 3rem;">
+                    <div class="theme-toggle" id="themeToggle" style="padding: 0.5rem; border: 1px solid var(--border); width: fit-content;">
+                        <i class="fas fa-moon"></i>
+                        <span style="font-size: 0.7rem; font-weight: 900; margin-left: 0.5rem; text-transform: uppercase;">Toggle Theme</span>
+                    </div>
+                </li>
+
+                <li style="margin-top: auto; padding-top: 2rem;">
+                    <a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                        <i class="fas fa-power-off"></i> Terminate Session
+                    </a>
+                </li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header">
-                <h2>Booking History</h2>
-                <div class="user-profile">
-                    <span id="studentName">Student</span>
-                    <i class="fas fa-circle-user fa-lg"></i>
-                </div>
+            <header style="margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; text-transform: uppercase;">Allocation Log History</h2>
+                <p style="color: var(--text-muted); font-weight: 700;">RECORDS RETRIEVED FROM MASTER DATABASE</p>
             </header>
 
-            <div class="table-container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h3>Your Reservations</h3>
-                    <button class="btn btn-secondary" id="refreshBookingsBtn"><i class="fas fa-sync"></i> Refresh</button>
-                </div>
-
-                <table>
+            <div class="handcrafted-card" style="background: var(--bg-main); padding: 0;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                     <thead>
-                        <tr>
-                            <th>Bus Info</th>
-                            <th>Destination</th>
-                            <th>Seat #</th>
-                            <th>Date & Time</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                        <tr style="background: var(--bg-surface); border-bottom: 2px solid var(--border);">
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase; letter-spacing: 0.1em;">Unit ID</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase; letter-spacing: 0.1em;">Destination</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase; letter-spacing: 0.1em;">Seat Allocation</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase; letter-spacing: 0.1em;">Timestamp</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase; letter-spacing: 0.1em;">Protocol Status</th>
+                            <th style="padding: 1rem; text-align: right; text-transform: uppercase; letter-spacing: 0.1em;">Command</th>
                         </tr>
                     </thead>
                     <tbody id="bookingsTableBody">
-                        <!-- Rows will be injected by JS -->
+                        <!-- Rows -->
                     </tbody>
                 </table>
-                <div id="noBookingsMsg" style="text-align: center; padding: 3rem; display: none;">
-                    <i class="fas fa-calendar-xmark fa-3x" style="color: #e2e8f0; margin-bottom: 1rem;"></i>
-                    <p style="color: var(--text-muted);">You haven't made any bookings yet.</p>
-                    <a href="book-seat.html" class="btn btn-primary" style="margin-top: 1rem;">Book Your First Seat</a>
-                </div>
             </div>
         </main>
     </div>
 
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, showToast, logout } from './js/api.js';
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
 
         async function loadBookings() {
             try {
                 const result = await apiFetch('/bookings/my');
                 const tbody = document.getElementById('bookingsTableBody');
-                const noMsg = document.getElementById('noBookingsMsg');
                 tbody.innerHTML = '';
 
-                if (!result.bookings || result.bookings.length === 0) {
-                    noMsg.style.display = 'block';
-                    return;
-                }
-
-                noMsg.style.display = 'none';
                 result.bookings.forEach(booking => {
                     const row = document.createElement('tr');
-                    const date = new Date(booking.createdAt).toLocaleString();
-                    
+                    row.style.borderBottom = '1px solid var(--border)';
                     row.innerHTML = `
-                        <td><strong>${booking.busId.busNumber}</strong><br><small>${booking.busId.busType}</small></td>
-                        <td>${booking.busId.routeId.destination}</td>
-                        <td><span class="badge active">${booking.seatNumber}</span></td>
-                        <td>${date}</td>
-                        <td><span class="badge ${booking.status === 'confirmed' ? 'active' : 'inactive'}">${booking.status}</span></td>
-                        <td>
-                            ${booking.status === 'confirmed' ? 
-                                `<button class="btn btn-secondary btn-cancel" data-id="${booking._id}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; color: var(--error);">Cancel</button>` 
-                                : '-'}
+                        <td style="padding: 1rem; font-weight: 700;">${booking.busId.busNumber}</td>
+                        <td style="padding: 1rem;">${booking.busId.routeId.destination}</td>
+                        <td style="padding: 1rem;"><span style="background: var(--brand); color: white; padding: 0.2rem 0.5rem; font-weight: 900;">${booking.seatNumber}</span></td>
+                        <td style="padding: 1rem; font-size: 0.8rem;">${new Date(booking.createdAt).toLocaleString().toUpperCase()}</td>
+                        <td style="padding: 1rem;"><span style="font-weight: 900; color: ${booking.status === 'confirmed' ? 'var(--brand)' : '#dc2626'}">${booking.status.toUpperCase()}</span></td>
+                        <td style="padding: 1rem; text-align: right;">
+                            ${booking.status === 'confirmed' ? `<button class="btn-cancel" data-id="${booking._id}" style="background: none; border: 1px solid #dc2626; color: #dc2626; padding: 0.3rem 0.6rem; cursor: pointer; font-family: var(--font-serif); font-weight: 900; font-size: 0.7rem;">TERMINATE</button>` : '---'}
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -102,24 +90,17 @@
 
                 document.querySelectorAll('.btn-cancel').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
-                        if(confirm('Are you sure you want to cancel this booking?')) {
+                        if(confirm('TERMINATE THIS RESERVATION?')) {
                             try {
                                 await apiFetch(`/bookings/${e.target.dataset.id}/cancel`, 'PATCH');
-                                showToast('Booking cancelled', 'success');
+                                showToast('RESERVATION TERMINATED', 'success');
                                 loadBookings();
-                            } catch (err) {
-                                showToast(err.message, 'error');
-                            }
+                            } catch (err) { showToast(err.message, 'error'); }
                         }
                     });
                 });
-
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
+            } catch (err) { showToast(err.message, 'error'); }
         }
-
-        document.getElementById('refreshBookingsBtn').addEventListener('click', loadBookings);
         loadBookings();
     </script>
 </body>

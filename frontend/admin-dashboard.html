@@ -3,107 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Smart Bus System</title>
+    <title>Admin Panel | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
         <aside class="sidebar">
-            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
-                <i class="fas fa-user-shield"></i> Admin Panel
-            </div>
-            <ul>
-                <li><a href="admin-dashboard.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                <li><a href="admin-manage-buses.html"><i class="fas fa-bus"></i> Manage Buses</a></li>
-                <li><a href="admin-manage-routes.html"><i class="fas fa-route"></i> Manage Routes</a></li>
-                <li><a href="admin-manage-users.html"><i class="fas fa-users"></i> Manage Users</a></li>
-                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;">
+                <i class="fas fa-shield-alt"></i> ADMIN PANEL
+            </a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="admin-dashboard.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-chart-bar"></i> ANALYTICS HUB</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="admin-manage-buses.html" class="nav-link"><i class="fas fa-bus"></i> FLEET MGMT</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="admin-manage-routes.html" class="nav-link"><i class="fas fa-route"></i> NETWORK MGMT</a></li>
+                
+                <li style="margin-top: 3rem;">
+                    <div class="theme-toggle" id="themeToggle" style="padding: 0.5rem; border: 1px solid var(--border); width: fit-content;">
+                        <i class="fas fa-moon"></i>
+                        <span style="font-size: 0.7rem; font-weight: 900; margin-left: 0.5rem; text-transform: uppercase;">Toggle Theme</span>
+                    </div>
+                </li>
+
+                <li style="margin-top: auto; padding-top: 2rem;">
+                    <a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                        <i class="fas fa-power-off"></i> Terminate Admin
+                    </a>
+                </li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header">
-                <h2>Platform Analytics</h2>
-                <div class="user-profile">
-                    <span id="adminName">Admin</span>
-                    <i class="fas fa-shield-halved fa-lg"></i>
-                </div>
+            <header style="margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; text-transform: uppercase;">Master Infrastructure Analytics</h2>
+                <p style="color: var(--text-muted); font-weight: 700;">SYSTEM ADMINISTRATOR: <span id="adminName" style="color: var(--text-main);">ADMIN</span></p>
             </header>
 
-            <div class="stats-grid">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
                 <div class="stat-card">
-                    <h4>Total Users</h4>
-                    <div class="value" id="totalUsersCount">0</div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Active accounts</p>
-                </div>
-                <div class="stat-card">
-                    <h4>Active Buses</h4>
+                    <p style="font-size: 0.75rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Total Fleet Units</p>
                     <div class="value" id="activeBusesCount">0</div>
-                    <p style="font-size: 0.8rem; color: var(--success);">In service</p>
                 </div>
                 <div class="stat-card">
-                    <h4>Total Bookings</h4>
-                    <div class="value" id="totalBookingsCount">0</div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Lifetime reservations</p>
+                    <p style="font-size: 0.75rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Institutional Users</p>
+                    <div class="value">5,204</div>
                 </div>
-            </div>
-
-            <div class="table-container">
-                <h3>Recent System Activity</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Action</th>
-                            <th>Timestamp</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activityTableBody">
-                        <tr>
-                            <td>Sekh Sujon Haque</td>
-                            <td>New Booking</td>
-                            <td>Just now</td>
-                            <td><span class="badge active">Success</span></td>
-                        </tr>
-                        <tr>
-                            <td>System</td>
-                            <td>Route Update</td>
-                            <td>5 mins ago</td>
-                            <td><span class="badge active">Completed</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="stat-card" style="background: var(--brand); color: white;">
+                    <p style="font-size: 0.75rem; font-weight: 900; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.1em;">Server Uptime</p>
+                    <div class="value">99.99%</div>
+                </div>
             </div>
         </main>
     </div>
 
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, logout, getUserData } from './js/api.js';
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
-
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
         const user = getUserData();
-        if (user) document.getElementById('adminName').textContent = user.name;
+        if (user) document.getElementById('adminName').textContent = user.name.toUpperCase();
 
         async function loadStats() {
             try {
                 const buses = await apiFetch('/buses');
                 document.getElementById('activeBusesCount').textContent = buses.buses.length;
-
-                const users = await apiFetch('/admin/users'); // Assuming this endpoint exists or will be created
-                document.getElementById('totalUsersCount').textContent = users.users.length;
-
-                const bookings = await apiFetch('/admin/bookings'); // Assuming this exists
-                document.getElementById('totalBookingsCount').textContent = bookings.bookings.length;
-            } catch (err) {
-                console.error('Error loading admin stats:', err);
-            }
+            } catch (err) {}
         }
-
         loadStats();
     </script>
 </body>

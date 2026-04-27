@@ -3,53 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account | LPU Smart Bus</title>
+    <title>Registration | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body style="background: var(--bg-surface);">
 
-    <div class="auth-container">
-        <div class="auth-card animate-up">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <a href="index.html" class="logo" style="justify-content: center; margin-bottom: 1rem;">
-                    <i class="fas fa-bus"></i> LPU Smart Bus
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+        <div class="handcrafted-card" style="width: 100%; max-width: 480px; padding: 3.5rem; background: var(--bg-main);">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <a href="index.html" class="nav-brand" style="justify-content: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-bus-alt"></i> SMARTBUS
                 </a>
-                <h2 style="font-family: var(--font-display); font-size: 1.8rem;">Join the Smart Fleet</h2>
-                <p style="color: var(--text-muted);">Experience next-generation campus transit.</p>
+                <h2 style="font-family: var(--font-serif); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Initialize Account</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700;">REGISTRATION PROTOCOL V2.1</p>
             </div>
 
             <form id="registerForm">
-                <div class="input-group">
-                    <label>Full Name</label>
-                    <input type="text" id="name" required placeholder="Sekh Sujon Haque">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;">Full Legal Name</label>
+                    <input type="text" id="name" required placeholder="Sekh Sujon Haque" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1rem; background: var(--bg-surface); color: var(--text-main);">
                 </div>
-                <div class="input-group">
-                    <label>Email Address</label>
-                    <input type="email" id="email" required placeholder="name@example.com">
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;">Institutional Email</label>
+                    <input type="email" id="email" required placeholder="name@institutional.edu" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1rem; background: var(--bg-surface); color: var(--text-main);">
                 </div>
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="password" required placeholder="••••••••">
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;">Security Password</label>
+                    <input type="password" id="password" required placeholder="••••••••" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1rem; background: var(--bg-surface); color: var(--text-main);">
                 </div>
-                <div class="input-group">
-                    <label>Account Type</label>
-                    <select id="role" required style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid rgba(0,0,0,0.1);">
-                        <option value="student">Student</option>
-                        <option value="driver">Driver</option>
-                        <option value="admin">Administrator</option>
+
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;">Operational Role</label>
+                    <select id="role" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1rem; background: var(--bg-surface); color: var(--text-main);">
+                        <option value="student">Student Account</option>
+                        <option value="driver">Logistics Driver</option>
+                        <option value="admin">System Administrator</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create Account</button>
+                <button type="submit" class="premium-btn btn-fill" style="width: 100%; padding: 1rem; font-size: 1rem;">Authenticate & Register</button>
             </form>
 
-            <div style="text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--text-muted);">
-                Already have an account? <a href="login.html" style="color: var(--primary); font-weight: 700;">Login here</a>
+            <div style="text-align: center; margin-top: 2.5rem; font-size: 0.9rem; font-weight: 700; color: var(--text-muted);">
+                Existing credentials? <a href="login.html" style="color: var(--brand); text-decoration: none;">Proceed to Log In</a>
+            </div>
+            
+            <div style="display: flex; justify-content: center; margin-top: 2rem;">
+                <div class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
+                </div>
             </div>
         </div>
     </div>
 
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, showToast } from './js/api.js';
 
@@ -64,8 +75,8 @@
 
             try {
                 await apiFetch('/auth/register', 'POST', data);
-                showToast('Registration Successful! Redirecting...', 'success');
-                setTimeout(() => window.location.href = 'login.html', 1500);
+                showToast('Registration Successful!', 'success');
+                setTimeout(() => window.location.href = 'login.html', 1200);
             } catch (err) {
                 showToast(err.message, 'error');
             }

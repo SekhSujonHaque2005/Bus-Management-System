@@ -3,63 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Dashboard | Smart Bus System</title>
+    <title>Driver Console | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
         <aside class="sidebar">
-            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
-                <i class="fas fa-steering-wheel"></i> Driver App
-            </div>
-            <ul>
-                <li><a href="driver-dashboard.html" class="active"><i class="fas fa-route"></i> Current Route</a></li>
-                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
-                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;">
+                <i class="fas fa-steering-wheel"></i> LOGISTICS
+            </a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="driver-dashboard.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-route"></i> ACTIVE MISSION</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="profile.html" class="nav-link"><i class="fas fa-user-id"></i> OPERATOR PROFILE</a></li>
+                
+                <li style="margin-top: 3rem;">
+                    <div class="theme-toggle" id="themeToggle" style="padding: 0.5rem; border: 1px solid var(--border); width: fit-content;">
+                        <i class="fas fa-moon"></i>
+                        <span style="font-size: 0.7rem; font-weight: 900; margin-left: 0.5rem; text-transform: uppercase;">Toggle Theme</span>
+                    </div>
+                </li>
+
+                <li style="margin-top: auto; padding-top: 2rem;">
+                    <a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                        <i class="fas fa-power-off"></i> Terminate Duty
+                    </a>
+                </li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header">
-                <h2>Live Trip Status</h2>
-                <div class="user-profile">
-                    <span id="driverName">Driver</span>
-                    <i class="fas fa-id-card fa-lg"></i>
-                </div>
+            <header style="margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; text-transform: uppercase;">Operator Flight Command</h2>
+                <p style="color: var(--text-muted); font-weight: 700;">LOGISTICS OPERATOR: <span id="driverName" style="color: var(--text-main);">DRIVER</span></p>
             </header>
 
-            <div class="table-container">
-                <div style="text-align: center; padding: 2rem;">
-                    <h3 style="margin-bottom: 1rem;">Update Your Location</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Turn on location sharing to let students track your bus.</p>
-                    
-                    <button class="btn btn-primary" id="startTripBtn" style="padding: 1.5rem 3rem; font-size: 1.2rem;">
-                        <i class="fas fa-play"></i> Start Trip
-                    </button>
-                    
-                    <button class="btn btn-secondary" id="stopTripBtn" style="display: none; padding: 1.5rem 3rem; font-size: 1.2rem; color: var(--error);">
-                        <i class="fas fa-stop"></i> End Trip
-                    </button>
-                </div>
+            <div class="handcrafted-card" style="text-align: center; padding: 5rem; background: var(--bg-main);">
+                <h3 style="font-size: 1.5rem; text-transform: uppercase; margin-bottom: 1rem;">Telemetry Uplink</h3>
+                <p style="color: var(--text-muted); margin-bottom: 3rem; font-weight: 700;">ACTIVATE GPS PROTOCOL TO COMMENCE LIVE TRACKING</p>
+                
+                <button class="premium-btn btn-fill" id="startTripBtn" style="font-size: 1.2rem; padding: 1.5rem 3rem;">INITIALIZE UPLINK</button>
+                <button class="premium-btn btn-outline" id="stopTripBtn" style="display: none; font-size: 1.2rem; padding: 1.5rem 3rem; color: #dc2626; border-color: #dc2626;">TERMINATE UPLINK</button>
 
-                <div id="statusInfo" style="margin-top: 2rem; display: none; text-align: center;">
-                    <div class="badge active" style="padding: 1rem 2rem; font-size: 1rem;">
-                        <i class="fas fa-signal"></i> Location Sharing Active
-                    </div>
+                <div id="statusInfo" style="margin-top: 3rem; display: none;">
+                    <span style="background: var(--brand); color: white; padding: 0.8rem 2rem; font-weight: 900; letter-spacing: 0.1em;">LIVE TELEMETRY ACTIVE</span>
                 </div>
             </div>
         </main>
     </div>
 
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, logout, getUserData } from './js/api.js';
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
         const user = getUserData();
-        if (user) document.getElementById('driverName').textContent = user.name;
+        if (user) document.getElementById('driverName').textContent = user.name.toUpperCase();
 
         let watchId = null;
 
@@ -72,23 +71,14 @@
                 watchId = navigator.geolocation.watchPosition(async (position) => {
                     const { latitude, longitude } = position.coords;
                     try {
-                        await apiFetch('/buses/location', 'PATCH', { 
-                            coordinates: [latitude, longitude] 
-                        });
-                    } catch (err) {
-                        console.error('Location update failed:', err);
-                    }
+                        await apiFetch('/buses/location', 'PATCH', { coordinates: [latitude, longitude] });
+                    } catch (err) {}
                 });
-            } else {
-                alert("Geolocation is not supported by this browser.");
             }
         });
 
         document.getElementById('stopTripBtn').addEventListener('click', () => {
-            if (watchId) {
-                navigator.geolocation.clearWatch(watchId);
-                watchId = null;
-            }
+            if (watchId) navigator.geolocation.clearWatch(watchId);
             document.getElementById('startTripBtn').style.display = 'inline-flex';
             document.getElementById('stopTripBtn').style.display = 'none';
             document.getElementById('statusInfo').style.display = 'none';

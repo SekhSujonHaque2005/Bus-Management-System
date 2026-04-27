@@ -3,78 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book a Seat | LPU Smart Bus</title>
+    <title>Booking | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
-        <!-- Sidebar will be injected or included -->
         <aside class="sidebar">
-            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
-                <i class="fas fa-bus"></i> Smart Bus
-            </div>
-            <ul>
-                <li><a href="student-dashboard.html"><i class="fas fa-home"></i> Overview</a></li>
-                <li><a href="book-seat.html" class="active"><i class="fas fa-plus-circle"></i> Book Seat</a></li>
-                <li><a href="my-bookings.html"><i class="fas fa-history"></i> My Bookings</a></li>
-                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
-                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;">
+                <i class="fas fa-bus-alt"></i> SMARTBUS
+            </a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="student-dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> SYSTEM OVERVIEW</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="book-seat.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-plus-square"></i> INITIALIZE BOOKING</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="my-bookings.html" class="nav-link"><i class="fas fa-history"></i> LOG HISTORY</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="profile.html" class="nav-link"><i class="fas fa-user-shield"></i> ACCOUNT PROFILE</a></li>
+                
+                <li style="margin-top: 3rem;">
+                    <div class="theme-toggle" id="themeToggle" style="padding: 0.5rem; border: 1px solid var(--border); width: fit-content;">
+                        <i class="fas fa-moon"></i>
+                        <span style="font-size: 0.7rem; font-weight: 900; margin-left: 0.5rem; text-transform: uppercase;">Toggle Theme</span>
+                    </div>
+                </li>
+
+                <li style="margin-top: auto; padding-top: 2rem;">
+                    <a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                        <i class="fas fa-power-off"></i> Terminate Session
+                    </a>
+                </li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header">
-                <h2>Search & Book</h2>
-                <div class="user-profile">
-                    <span id="studentName">Student</span>
-                    <i class="fas fa-circle-user fa-lg"></i>
-                </div>
+            <header style="margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; text-transform: uppercase;">Initialize Booking</h2>
+                <p style="color: var(--text-muted); font-weight: 700;">PROTOCOL: SEAT_ALLOCATION_V1</p>
             </header>
 
-            <div class="table-container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h3>Available Routes</h3>
-                    <div style="display: flex; gap: 1rem;">
-                        <input type="text" id="searchInput" placeholder="Search destination..." style="padding: 0.6rem 1rem; border-radius: var(--radius-sm); border: 1px solid #e2e8f0; width: 300px;">
-                        <button class="btn btn-primary" id="refreshRoutesBtn"><i class="fas fa-sync"></i></button>
-                    </div>
-                </div>
-
-                <div id="routesList" class="features-grid">
-                    <!-- Cards will be injected by JS -->
-                    <div class="spinner-container" id="loadingSpinner">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;" id="routesList">
+                <!-- Route Cards -->
             </div>
         </main>
     </div>
 
-    <!-- Booking Modal -->
-    <div id="bookingModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Confirm Seat</h3>
-                <button class="modal-close" onclick="closeModal()">×</button>
-            </div>
-            <div id="modalBody">
-                <p>You are about to book a seat for <strong id="destText"></strong>.</p>
-                <div style="margin: 1.5rem 0; padding: 1rem; background: #f8fafc; border-radius: var(--radius-sm);">
-                    <div style="margin-bottom: 0.5rem;"><i class="fas fa-bus-simple"></i> Bus: <span id="busListText">Select a bus</span></div>
-                    <div><i class="fas fa-clock"></i> Next Departure: 10:30 AM</div>
-                </div>
-                <button class="btn btn-primary" style="width: 100%;" id="confirmBookingBtn">Book Now</button>
-            </div>
-        </div>
-    </div>
-
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, showToast, logout } from './js/api.js';
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
 
         async function loadRoutes() {
             try {
@@ -82,68 +58,39 @@
                 const container = document.getElementById('routesList');
                 container.innerHTML = '';
 
-                if (result.routes.length === 0) {
-                    container.innerHTML = '<p>No routes found.</p>';
-                    return;
-                }
-
                 result.routes.forEach(route => {
                     const card = document.createElement('div');
-                    card.className = 'feature-card';
+                    card.className = 'handcrafted-card';
+                    card.style.background = 'var(--bg-main)';
                     card.innerHTML = `
-                        <div class="icon-box"><i class="fas fa-map-location-dot"></i></div>
-                        <h3>${route.destination}</h3>
-                        <p style="margin-bottom: 1.5rem;">From: ${route.source}</p>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Stops: ${route.stops.join(', ')}</p>
-                        <button class="btn btn-primary btn-book" data-id="${route._id}" data-dest="${route.destination}" style="width: 100%;">Reserve Seat</button>
+                        <div style="font-size: 0.7rem; font-weight: 900; color: var(--brand); margin-bottom: 1rem;">ROUTE ID: ${route._id.slice(-6).toUpperCase()}</div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${route.destination}</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">ORIGIN: ${route.source}</p>
+                        <div style="font-size: 0.75rem; border: 1px solid var(--border); padding: 0.8rem; margin-bottom: 1.5rem;">
+                            <strong>STOPS:</strong> ${route.stops.join(' | ')}
+                        </div>
+                        <button class="premium-btn btn-fill btn-book" data-id="${route._id}" data-dest="${route.destination}" style="width: 100%;">Commit Reservation</button>
                     `;
                     container.appendChild(card);
                 });
 
                 document.querySelectorAll('.btn-book').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
+                    btn.addEventListener('click', async (e) => {
                         const routeId = e.target.dataset.id;
-                        const dest = e.target.dataset.dest;
-                        openBookingModal(routeId, dest);
+                        try {
+                            const buses = await apiFetch(`/buses/route/${routeId}`);
+                            if (buses.buses.length === 0) throw new Error('NO UNITS AVAILABLE ON THIS ROUTE');
+                            
+                            await apiFetch('/bookings', 'POST', { busId: buses.buses[0]._id });
+                            showToast('ALLOCATION SUCCESSFUL', 'success');
+                            setTimeout(() => window.location.href = 'my-bookings.html', 1000);
+                        } catch (err) {
+                            showToast(err.message, 'error');
+                        }
                     });
                 });
-
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
+            } catch (err) { showToast(err.message, 'error'); }
         }
-
-        let selectedRouteId = null;
-
-        function openBookingModal(routeId, dest) {
-            selectedRouteId = routeId;
-            document.getElementById('destText').textContent = dest;
-            document.getElementById('bookingModal').classList.add('active');
-        }
-
-        window.closeModal = () => {
-            document.getElementById('bookingModal').classList.remove('active');
-        }
-
-        document.getElementById('confirmBookingBtn').addEventListener('click', async () => {
-            try {
-                // Logic to find a bus for this route
-                const buses = await apiFetch(`/buses/route/${selectedRouteId}`);
-                if (buses.buses.length === 0) {
-                    throw new Error('No buses available for this route right now.');
-                }
-
-                const busId = buses.buses[0]._id;
-                await apiFetch('/bookings', 'POST', { busId });
-                
-                showToast('Booking Successful!', 'success');
-                closeModal();
-                setTimeout(() => window.location.href = 'my-bookings.html', 1500);
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
-        });
-
         loadRoutes();
     </script>
 </body>

@@ -3,99 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile | LPU Smart Bus</title>
+    <title>Profile | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
         <aside class="sidebar">
-            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
-                <i class="fas fa-bus"></i> Smart Bus
-            </div>
-            <ul>
-                <li><a href="student-dashboard.html"><i class="fas fa-home"></i> Overview</a></li>
-                <li><a href="book-seat.html"><i class="fas fa-plus-circle"></i> Book Seat</a></li>
-                <li><a href="my-bookings.html"><i class="fas fa-history"></i> My Bookings</a></li>
-                <li><a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
-                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;">
+                <i class="fas fa-bus-alt"></i> SMARTBUS
+            </a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="student-dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> SYSTEM OVERVIEW</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="book-seat.html" class="nav-link"><i class="fas fa-plus-square"></i> INITIALIZE BOOKING</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="my-bookings.html" class="nav-link"><i class="fas fa-history"></i> LOG HISTORY</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="profile.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-user-shield"></i> ACCOUNT PROFILE</a></li>
+                
+                <li style="margin-top: 3rem;">
+                    <div class="theme-toggle" id="themeToggle" style="padding: 0.5rem; border: 1px solid var(--border); width: fit-content;">
+                        <i class="fas fa-moon"></i>
+                        <span style="font-size: 0.7rem; font-weight: 900; margin-left: 0.5rem; text-transform: uppercase;">Toggle Theme</span>
+                    </div>
+                </li>
+
+                <li style="margin-top: auto; padding-top: 2rem;">
+                    <a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                        <i class="fas fa-power-off"></i> Terminate Session
+                    </a>
+                </li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header">
-                <h2>Your Profile</h2>
+            <header style="margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; text-transform: uppercase;">Account Profile Infrastructure</h2>
+                <p style="color: var(--text-muted); font-weight: 700;">USER IDENTITY VERIFICATION STATUS: SECURE</p>
             </header>
 
-            <div class="table-container" style="max-width: 600px; margin: 0 auto;">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <div style="width: 100px; height: 100px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2.5rem;">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h3 id="displayUserName">User Name</h3>
-                    <p id="displayUserRole" style="text-transform: capitalize; color: var(--text-muted);">Role</p>
-                </div>
-
+            <div class="handcrafted-card" style="max-width: 600px; background: var(--bg-main);">
                 <form id="profileForm">
-                    <div class="input-group">
-                        <label>Full Name</label>
-                        <input type="text" id="profileName" required>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;">Identity Legal Name</label>
+                        <input type="text" id="profileName" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1.1rem; background: var(--bg-surface); color: var(--text-main);">
                     </div>
-                    <div class="input-group">
-                        <label>Email Address</label>
-                        <input type="email" id="profileEmail" readonly style="background: #f1f5f9; cursor: not-allowed;">
-                        <small style="color: var(--text-muted);">Email cannot be changed.</small>
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display: block; font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;">Institutional Email Pointer</label>
+                        <input type="email" id="profileEmail" readonly style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1.1rem; background: #f0f0f0; color: #888; cursor: not-allowed;">
                     </div>
                     
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Update Profile</button>
+                    <button type="submit" class="premium-btn btn-fill" style="width: 100%; padding: 1rem; font-size: 1rem;">Execute Profile Update</button>
                 </form>
 
-                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
-                    <h4>Security</h4>
-                    <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem; color: var(--error);" id="deleteAccBtn">Delete Account</button>
+                <div style="margin-top: 4rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                    <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: #dc2626; margin-bottom: 1rem;">Security & Deletion</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">This command will permanently terminate your account and wipe all allocation history from the master database.</p>
+                    <button class="premium-btn btn-outline" style="width: 100%; color: #dc2626; border-color: #dc2626;" id="deleteAccBtn">Terminate Institutional Account</button>
                 </div>
             </div>
         </main>
     </div>
 
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, showToast, logout, getUserData, setUserData } from './js/api.js';
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
 
         const user = getUserData();
         if (user) {
             document.getElementById('profileName').value = user.name;
             document.getElementById('profileEmail').value = user.email;
-            document.getElementById('displayUserName').textContent = user.name;
-            document.getElementById('displayUserRole').textContent = user.role;
         }
 
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('profileName').value;
-            
             try {
                 const result = await apiFetch('/auth/profile', 'PUT', { name });
                 setUserData(result.user);
-                document.getElementById('displayUserName').textContent = result.user.name;
-                showToast('Profile updated successfully', 'success');
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
+                showToast('PROFILE UPDATE EXECUTED', 'success');
+            } catch (err) { showToast(err.message, 'error'); }
         });
 
         document.getElementById('deleteAccBtn').addEventListener('click', async () => {
-            if (confirm('Are you sure? This action is permanent and will delete all your booking history.')) {
+            if (confirm('PERMANENTLY TERMINATE ACCOUNT?')) {
                 try {
                     await apiFetch('/auth/profile', 'DELETE');
-                    showToast('Account deleted', 'success');
+                    showToast('ACCOUNT TERMINATED', 'success');
                     logout();
-                } catch (err) {
-                    showToast(err.message, 'error');
-                }
+                } catch (err) { showToast(err.message, 'error'); }
             }
         });
     </script>

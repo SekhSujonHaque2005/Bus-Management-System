@@ -3,44 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | SmartBus</title>
+    <title>Authentication | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body style="background: var(--bg-main);">
+<body style="background: var(--bg-surface);">
 
     <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
-        <div class="handcrafted-card" style="width: 100%; max-width: 420px; padding: 3.5rem 2.5rem; background: var(--bg-card);">
+        <div class="handcrafted-card" style="width: 100%; max-width: 420px; padding: 3.5rem; background: var(--bg-main);">
             <div style="text-align: center; margin-bottom: 3rem;">
                 <a href="index.html" class="nav-brand" style="justify-content: center; margin-bottom: 1.5rem;">
-                    <i class="fas fa-bus-simple"></i> SmartBus
+                    <i class="fas fa-bus-alt"></i> SMARTBUS
                 </a>
-                <h2 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.5rem;">Welcome Back</h2>
-                <p style="color: var(--text-muted); font-size: 0.95rem;">Enter your credentials to access your fleet.</p>
+                <h2 style="font-family: var(--font-serif); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">System Access</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700;">SECURE LOGIN GATEWAY</p>
             </div>
 
             <form id="loginForm">
                 <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em;">Email Address</label>
-                    <input type="email" id="email" required placeholder="name@lpu.in" style="width: 100%; padding: 1rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--surface); color: var(--text-main); transition: var(--transition);">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;">Credentials ID (Email)</label>
+                    <input type="email" id="email" required placeholder="name@institutional.edu" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1rem; background: var(--bg-surface); color: var(--text-main);">
                 </div>
 
                 <div style="margin-bottom: 2rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Password</label>
-                        <a href="#" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; text-decoration: none;">Forgot?</a>
+                        <label style="font-size: 0.75rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Security Key</label>
+                        <a href="register.html" style="font-size: 0.75rem; color: var(--brand); font-weight: 700; text-decoration: none;">Forgot Access?</a>
                     </div>
-                    <input type="password" id="password" required placeholder="••••••••" style="width: 100%; padding: 1rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--surface); color: var(--text-main); transition: var(--transition);">
+                    <input type="password" id="password" required placeholder="••••••••" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); font-family: var(--font-serif); font-size: 1rem; background: var(--bg-surface); color: var(--text-main);">
                 </div>
 
-                <button type="submit" class="premium-btn btn-fill" style="width: 100%; justify-content: center; padding: 1rem;">Sign In to Dashboard</button>
+                <button type="submit" class="premium-btn btn-fill" style="width: 100%; padding: 1rem; font-size: 1rem;">Authorize Access</button>
             </form>
 
-            <div style="text-align: center; margin-top: 2.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                New to the platform? <a href="register.html" style="color: var(--primary); font-weight: 700; text-decoration: none;">Create an account</a>
+            <div style="text-align: center; margin-top: 2.5rem; font-size: 0.9rem; font-weight: 700; color: var(--text-muted);">
+                Unauthorized? <a href="register.html" style="color: var(--brand); text-decoration: none;">Initialize New Account</a>
             </div>
             
-            <div style="display: flex; justify-content: center; margin-top: 2.5rem;">
+            <div style="display: flex; justify-content: center; margin-top: 2rem;">
                 <div class="theme-toggle" id="themeToggle">
                     <i class="fas fa-moon"></i>
                     <i class="fas fa-sun"></i>
@@ -62,7 +62,7 @@
                 const result = await apiFetch('/auth/login', 'POST', { email, password });
                 setToken(result.token);
                 setUserData(result.user);
-                showToast('Welcome back!', 'success');
+                showToast('Authentication Successful', 'success');
                 setTimeout(() => {
                     if (result.user.role === 'admin') window.location.href = 'admin-dashboard.html';
                     else if (result.user.role === 'driver') window.location.href = 'driver-dashboard.html';

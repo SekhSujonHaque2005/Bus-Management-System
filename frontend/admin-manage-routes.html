@@ -3,145 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Routes | Admin Dashboard</title>
+    <title>Network Mgmt | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
         <aside class="sidebar">
-            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
-                <i class="fas fa-user-shield"></i> Admin Panel
-            </div>
-            <ul>
-                <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                <li><a href="admin-manage-buses.html"><i class="fas fa-bus"></i> Manage Buses</a></li>
-                <li><a href="admin-manage-routes.html" class="active"><i class="fas fa-route"></i> Manage Routes</a></li>
-                <li><a href="admin-manage-users.html"><i class="fas fa-users"></i> Manage Users</a></li>
-                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;"><i class="fas fa-shield-alt"></i> ADMIN PANEL</a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="admin-dashboard.html" class="nav-link"><i class="fas fa-chart-bar"></i> ANALYTICS HUB</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="admin-manage-buses.html" class="nav-link"><i class="fas fa-bus"></i> FLEET MGMT</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="admin-manage-routes.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-route"></i> NETWORK MGMT</a></li>
+                <li style="margin-top: auto; padding-top: 2rem;"><a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase;"><i class="fas fa-power-off"></i> Terminate Admin</a></li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header">
-                <h2>Campus Routes</h2>
-                <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Route</button>
+            <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; text-transform: uppercase;">Infrastructure Network Topology</h2>
+                <button class="premium-btn btn-fill" onclick="document.getElementById('routeModal').style.display='flex'">Define Route</button>
             </header>
 
-            <div class="table-container">
-                <table>
+            <div class="handcrafted-card" style="background: var(--bg-main); padding: 0;">
+                <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr>
-                            <th>Source</th>
-                            <th>Destination</th>
-                            <th>Stops</th>
-                            <th>Estimated Time</th>
-                            <th>Actions</th>
+                        <tr style="background: var(--bg-surface); border-bottom: 2px solid var(--border);">
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase;">Origin</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase;">Destination</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase;">Node Stops</th>
+                            <th style="padding: 1rem; text-align: right; text-transform: uppercase;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="routesTableBody">
-                        <!-- Rows injected by JS -->
-                    </tbody>
+                    <tbody id="routesTableBody"></tbody>
                 </table>
             </div>
         </main>
     </div>
 
-    <!-- Add Route Modal -->
-    <div id="routeModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Add New Route</h3>
-                <button class="modal-close" onclick="closeModal()">×</button>
-            </div>
+    <div id="routeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="handcrafted-card" style="width: 100%; max-width: 400px; background: var(--bg-main);">
+            <h3 style="margin-bottom: 2rem; text-transform: uppercase;">Define Network Route</h3>
             <form id="routeForm">
-                <div class="input-group">
-                    <label>Source</label>
-                    <input type="text" id="source" required placeholder="e.g. Block 32">
-                </div>
-                <div class="input-group">
-                    <label>Destination</label>
-                    <input type="text" id="destination" required placeholder="e.g. Main Gate">
-                </div>
-                <div class="input-group">
-                    <label>Stops (Comma separated)</label>
-                    <input type="text" id="stops" required placeholder="Stop A, Stop B, Stop C">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Route</button>
+                <input type="text" id="source" required placeholder="ORIGIN NODE" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); font-family: var(--font-serif);">
+                <input type="text" id="destination" required placeholder="DESTINATION NODE" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); font-family: var(--font-serif);">
+                <input type="text" id="stops" required placeholder="INTERMEDIATE STOPS (COMMA SEP)" style="width: 100%; padding: 0.8rem; margin-bottom: 2rem; border: 1px solid var(--border); font-family: var(--font-serif);">
+                <button type="submit" class="premium-btn btn-fill" style="width: 100%;">Authorize Definition</button>
+                <button type="button" class="premium-btn btn-outline" style="width: 100%; margin-top: 1rem;" onclick="document.getElementById('routeModal').style.display='none'">Abort</button>
             </form>
         </div>
     </div>
 
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, showToast, logout } from './js/api.js';
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
 
         async function loadRoutes() {
             try {
                 const result = await apiFetch('/routes');
                 const tbody = document.getElementById('routesTableBody');
                 tbody.innerHTML = '';
-
                 result.routes.forEach(route => {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${route.source}</td>
-                        <td><strong>${route.destination}</strong></td>
-                        <td>${route.stops.join(', ')}</td>
-                        <td>30 mins</td>
-                        <td>
-                            <button class="btn btn-secondary btn-delete" data-id="${route._id}" style="color: var(--error);"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
+                    row.style.borderBottom = '1px solid var(--border)';
+                    row.innerHTML = `<td style="padding: 1rem;">${route.source}</td><td style="padding: 1rem; font-weight: 700;">${route.destination}</td><td style="padding: 1rem; font-size: 0.8rem;">${route.stops.join(' | ')}</td><td style="padding: 1rem; text-align: right;"><button class="btn-delete" data-id="${route._id}" style="color: #dc2626; background: none; border: 1px solid #dc2626; padding: 0.2rem 0.5rem; cursor: pointer; font-family: var(--font-serif); font-weight: 900;">DELETE</button></td>`;
                     tbody.appendChild(row);
                 });
-
-                document.querySelectorAll('.btn-delete').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        if(confirm('Delete this route?')) {
-                            try {
-                                await apiFetch(`/routes/${e.target.closest('button').dataset.id}`, 'DELETE');
-                                showToast('Route removed', 'success');
-                                loadRoutes();
-                            } catch (err) {
-                                showToast(err.message, 'error');
-                            }
-                        }
-                    });
-                });
-
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
+                document.querySelectorAll('.btn-delete').forEach(btn => btn.addEventListener('click', async (e) => { if(confirm('DELETE ROUTE?')) { await apiFetch(`/routes/${e.target.dataset.id}`, 'DELETE'); loadRoutes(); } }));
+            } catch (err) {}
         }
-
-        window.openAddModal = () => {
-            document.getElementById('routeModal').classList.add('active');
-        };
-
-        window.closeModal = () => {
-            document.getElementById('routeModal').classList.remove('active');
-        };
 
         document.getElementById('routeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                source: document.getElementById('source').value,
-                destination: document.getElementById('destination').value,
-                stops: document.getElementById('stops').value.split(',').map(s => s.trim())
-            };
-
-            try {
-                await apiFetch('/routes', 'POST', data);
-                showToast('Route created successfully', 'success');
-                closeModal();
-                loadRoutes();
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
+            const data = { source: document.getElementById('source').value, destination: document.getElementById('destination').value, stops: document.getElementById('stops').value.split(',').map(s => s.trim()) };
+            try { await apiFetch('/routes', 'POST', data); document.getElementById('routeModal').style.display='none'; loadRoutes(); } catch (err) {}
         });
 
         loadRoutes();

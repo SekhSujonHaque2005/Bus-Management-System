@@ -3,171 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Buses | Admin Dashboard</title>
+    <title>Fleet Mgmt | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
         <aside class="sidebar">
-            <div class="logo" style="padding: 1rem 0; margin-bottom: 2rem;">
-                <i class="fas fa-user-shield"></i> Admin Panel
-            </div>
-            <ul>
-                <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                <li><a href="admin-manage-buses.html" class="active"><i class="fas fa-bus"></i> Manage Buses</a></li>
-                <li><a href="admin-manage-routes.html"><i class="fas fa-route"></i> Manage Routes</a></li>
-                <li><a href="admin-manage-users.html"><i class="fas fa-users"></i> Manage Users</a></li>
-                <li style="margin-top: auto;"><a href="#" id="logoutBtn" style="color: var(--error);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;"><i class="fas fa-shield-alt"></i> ADMIN PANEL</a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="admin-dashboard.html" class="nav-link"><i class="fas fa-chart-bar"></i> ANALYTICS HUB</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="admin-manage-buses.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-bus"></i> FLEET MGMT</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="admin-manage-routes.html" class="nav-link"><i class="fas fa-route"></i> NETWORK MGMT</a></li>
+                <li style="margin-top: auto; padding-top: 2rem;"><a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase;"><i class="fas fa-power-off"></i> Terminate Admin</a></li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header">
-                <h2>Bus Fleet Management</h2>
-                <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Bus</button>
+            <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; text-transform: uppercase;">Fleet Asset Management</h2>
+                <button class="premium-btn btn-fill" onclick="document.getElementById('busModal').style.display='flex'">Add Unit</button>
             </header>
 
-            <div class="table-container">
-                <table>
+            <div class="handcrafted-card" style="background: var(--bg-main); padding: 0;">
+                <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr>
-                            <th>Bus Number</th>
-                            <th>Model/Type</th>
-                            <th>Route</th>
-                            <th>Driver</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                        <tr style="background: var(--bg-surface); border-bottom: 2px solid var(--border);">
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase;">Unit Num</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase;">Class</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase;">Assigned Route</th>
+                            <th style="padding: 1rem; text-align: left; text-transform: uppercase;">Status</th>
+                            <th style="padding: 1rem; text-align: right; text-transform: uppercase;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="busesTableBody">
-                        <!-- Rows injected by JS -->
-                    </tbody>
+                    <tbody id="busesTableBody"></tbody>
                 </table>
             </div>
         </main>
     </div>
 
-    <!-- Add Bus Modal -->
-    <div id="busModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 id="modalTitle">Add New Bus</h3>
-                <button class="modal-close" onclick="closeModal()">×</button>
-            </div>
+    <div id="busModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="handcrafted-card" style="width: 100%; max-width: 400px; background: var(--bg-main);">
+            <h3 style="margin-bottom: 2rem; text-transform: uppercase;">Register New Unit</h3>
             <form id="busForm">
-                <div class="input-group">
-                    <label>Bus Number</label>
-                    <input type="text" id="busNumber" required placeholder="e.g. PB-01-1234">
-                </div>
-                <div class="input-group">
-                    <label>Bus Type</label>
-                    <input type="text" id="busType" required placeholder="e.g. AC Sleeper">
-                </div>
-                <div class="input-group">
-                    <label>Route</label>
-                    <select id="routeSelect" required style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid #e2e8f0;">
-                        <option value="">Select Route</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Total Seats</label>
-                    <input type="number" id="capacity" required value="40">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Bus</button>
+                <input type="text" id="busNumber" required placeholder="UNIT NUMBER" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); font-family: var(--font-serif);">
+                <input type="text" id="busType" required placeholder="UNIT CLASS (e.g. AC)" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); font-family: var(--font-serif);">
+                <select id="routeSelect" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); font-family: var(--font-serif);"></select>
+                <input type="number" id="capacity" required value="40" style="width: 100%; padding: 0.8rem; margin-bottom: 2rem; border: 1px solid var(--border); font-family: var(--font-serif);">
+                <button type="submit" class="premium-btn btn-fill" style="width: 100%;">Authorize Addition</button>
+                <button type="button" class="premium-btn btn-outline" style="width: 100%; margin-top: 1rem;" onclick="document.getElementById('busModal').style.display='none'">Abort</button>
             </form>
         </div>
     </div>
 
+    <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, showToast, logout } from './js/api.js';
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
 
         async function loadBuses() {
             try {
                 const result = await apiFetch('/buses');
                 const tbody = document.getElementById('busesTableBody');
                 tbody.innerHTML = '';
-
                 result.buses.forEach(bus => {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${bus.busNumber}</strong></td>
-                        <td>${bus.busType}</td>
-                        <td>${bus.routeId ? bus.routeId.destination : 'No Route'}</td>
-                        <td>${bus.driverId ? bus.driverId.name : 'Unassigned'}</td>
-                        <td><span class="badge active">${bus.status}</span></td>
-                        <td>
-                            <button class="btn btn-secondary btn-delete" data-id="${bus._id}" style="color: var(--error);"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
+                    row.style.borderBottom = '1px solid var(--border)';
+                    row.innerHTML = `<td style="padding: 1rem; font-weight: 700;">${bus.busNumber}</td><td style="padding: 1rem;">${bus.busType}</td><td style="padding: 1rem;">${bus.routeId ? bus.routeId.destination : 'UNASSIGNED'}</td><td style="padding: 1rem;"><span style="font-weight: 900;">${bus.status.toUpperCase()}</span></td><td style="padding: 1rem; text-align: right;"><button class="btn-delete" data-id="${bus._id}" style="color: #dc2626; background: none; border: 1px solid #dc2626; padding: 0.2rem 0.5rem; cursor: pointer; font-family: var(--font-serif); font-weight: 900;">DELETE</button></td>`;
                     tbody.appendChild(row);
                 });
-
-                document.querySelectorAll('.btn-delete').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        if(confirm('Delete this bus?')) {
-                            try {
-                                await apiFetch(`/buses/${e.target.closest('button').dataset.id}`, 'DELETE');
-                                showToast('Bus removed', 'success');
-                                loadBuses();
-                            } catch (err) {
-                                showToast(err.message, 'error');
-                            }
-                        }
-                    });
-                });
-
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
+                document.querySelectorAll('.btn-delete').forEach(btn => btn.addEventListener('click', async (e) => { if(confirm('DELETE UNIT?')) { await apiFetch(`/buses/${e.target.dataset.id}`, 'DELETE'); loadBuses(); } }));
+            } catch (err) {}
         }
 
         async function loadRoutes() {
             try {
                 const result = await apiFetch('/routes');
                 const select = document.getElementById('routeSelect');
-                result.routes.forEach(route => {
-                    const opt = document.createElement('option');
-                    opt.value = route._id;
-                    opt.textContent = `${route.source} → ${route.destination}`;
-                    select.appendChild(opt);
-                });
+                result.routes.forEach(route => { const opt = document.createElement('option'); opt.value = route._id; opt.textContent = `${route.source} → ${route.destination}`; select.appendChild(opt); });
             } catch (err) {}
         }
 
-        window.openAddModal = () => {
-            document.getElementById('busModal').classList.add('active');
-        };
-
-        window.closeModal = () => {
-            document.getElementById('busModal').classList.remove('active');
-        };
-
         document.getElementById('busForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                busNumber: document.getElementById('busNumber').value,
-                busType: document.getElementById('busType').value,
-                routeId: document.getElementById('routeSelect').value,
-                capacity: document.getElementById('capacity').value
-            };
-
-            try {
-                await apiFetch('/buses', 'POST', data);
-                showToast('Bus added successfully', 'success');
-                closeModal();
-                loadBuses();
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
+            const data = { busNumber: document.getElementById('busNumber').value, busType: document.getElementById('busType').value, routeId: document.getElementById('routeSelect').value, capacity: document.getElementById('capacity').value };
+            try { await apiFetch('/buses', 'POST', data); document.getElementById('busModal').style.display='none'; loadBuses(); } catch (err) {}
         });
 
-        loadBuses();
-        loadRoutes();
+        loadBuses(); loadRoutes();
     </script>
 </body>
 </html>

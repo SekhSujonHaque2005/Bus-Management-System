@@ -3,76 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | SmartBus</title>
+    <title>Dashboard | SMARTBUS</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="dashboard-wrapper">
-        <aside class="sidebar glass" style="border-right: 1px solid var(--border);">
-            <div class="nav-brand" style="padding: 1.5rem; margin-bottom: 2rem;">
-                <i class="fas fa-bus-simple"></i> SmartBus
-            </div>
-            <ul style="list-style: none; padding: 0 1rem;">
-                <li style="margin-bottom: 0.5rem;"><a href="student-dashboard.html" class="nav-link active" style="background: var(--p-50); color: var(--primary); padding: 0.8rem 1rem; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-grid-2"></i> Overview</a></li>
-                <li style="margin-bottom: 0.5rem;"><a href="book-seat.html" class="nav-link" style="padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-plus-circle"></i> Book Seat</a></li>
-                <li style="margin-bottom: 0.5rem;"><a href="my-bookings.html" class="nav-link" style="padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-history"></i> My Bookings</a></li>
-                <li style="margin-bottom: 0.5rem;"><a href="profile.html" class="nav-link" style="padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-user"></i> Profile</a></li>
+        <aside class="sidebar">
+            <a href="index.html" class="nav-brand" style="margin-bottom: 3rem;">
+                <i class="fas fa-bus-alt"></i> SMARTBUS
+            </a>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 0.5rem;"><a href="student-dashboard.html" class="nav-link" style="color: var(--brand); border-bottom: 2px solid var(--brand);"><i class="fas fa-chart-line"></i> SYSTEM OVERVIEW</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="book-seat.html" class="nav-link"><i class="fas fa-plus-square"></i> INITIALIZE BOOKING</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="my-bookings.html" class="nav-link"><i class="fas fa-history"></i> LOG HISTORY</a></li>
+                <li style="margin-bottom: 0.5rem;"><a href="profile.html" class="nav-link"><i class="fas fa-user-shield"></i> ACCOUNT PROFILE</a></li>
                 
-                <li style="margin-top: 3rem; padding: 0 1rem;">
-                    <div class="theme-toggle" id="themeToggle" style="width: 100%; border-radius: var(--radius-sm); gap: 0.5rem; justify-content: flex-start; padding: 0 1rem;">
+                <li style="margin-top: 3rem;">
+                    <div class="theme-toggle" id="themeToggle" style="padding: 0.5rem; border: 1px solid var(--border); width: fit-content;">
                         <i class="fas fa-moon"></i>
-                        <span style="font-size: 0.9rem; font-weight: 600;">Switch Theme</span>
+                        <i class="fas fa-sun"></i>
+                        <span style="font-size: 0.7rem; font-weight: 900; margin-left: 0.5rem; text-transform: uppercase;">Toggle Theme</span>
                     </div>
                 </li>
 
-                <li style="margin-top: auto; padding-top: 2rem;"><a href="#" id="logoutBtn" style="color: var(--error); padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                <li style="margin-top: auto; padding-top: 2rem;">
+                    <a href="login.html" id="logoutBtn" style="color: #dc2626; font-weight: 900; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                        <i class="fas fa-power-off"></i> Terminate Session
+                    </a>
+                </li>
             </ul>
         </aside>
 
         <main class="dashboard-content">
-            <header class="dashboard-header" style="margin-bottom: 3rem;">
+            <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
                 <div>
-                    <h2 style="font-family: var(--font-display); font-size: 2rem;">Hey, <span id="studentName">Sujon</span> 👋</h2>
-                    <p style="color: var(--text-muted);">Welcome back to your campus transit hub.</p>
+                    <h2 style="font-size: 2.5rem; text-transform: uppercase; margin-bottom: 0.5rem;">System Dashboard</h2>
+                    <p style="color: var(--text-muted); font-weight: 700;">USER: <span id="studentName" style="color: var(--text-main);">STUDENT</span> | STATUS: ACTIVE</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 1.5rem;">
-                    <div class="theme-toggle mobile-only" id="themeToggleMobile" style="display: none;">
-                        <i class="fas fa-moon"></i>
-                    </div>
-                    <div style="position: relative;">
-                        <i class="fas fa-bell fa-lg" style="color: var(--text-muted); cursor: pointer;"></i>
-                        <span style="position: absolute; top: -5px; right: -5px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; border: 2px solid var(--bg-main);"></span>
-                    </div>
-                    <div style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800;">S</div>
+                <div style="text-align: right;">
+                    <p id="currentDate" style="font-weight: 900; font-size: 0.9rem;"></p>
+                    <p style="font-size: 0.75rem; color: var(--text-muted);">LATENCY: 24ms</p>
                 </div>
             </header>
 
-            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-                <div class="handcrafted-card">
-                    <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">ACTIVE BUSES</p>
-                    <div style="font-size: 2.5rem; font-family: var(--font-display); font-weight: 800;" id="activeBusesCount">0</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+                <div class="stat-card">
+                    <p style="font-size: 0.75rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Active Fleet</p>
+                    <div class="value" id="activeBusesCount">0</div>
                 </div>
-                <div class="handcrafted-card">
-                    <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">MY BOOKINGS</p>
-                    <div style="font-size: 2.5rem; font-family: var(--font-display); font-weight: 800;" id="myBookingsCount">0</div>
+                <div class="stat-card">
+                    <p style="font-size: 0.75rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Committed Bookings</p>
+                    <div class="value" id="myBookingsCount">0</div>
                 </div>
-                <div class="handcrafted-card" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none;">
-                    <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">NEXT BUS</p>
-                    <div style="font-size: 2.5rem; font-family: var(--font-display); font-weight: 800;">10:45</div>
-                    <p style="font-size: 0.8rem; opacity: 0.9;">Main Gate &bull; Route 42</p>
+                <div class="stat-card" style="background: var(--brand); color: white;">
+                    <p style="font-size: 0.75rem; font-weight: 900; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.1em;">Network Efficiency</p>
+                    <div class="value">98.2%</div>
                 </div>
             </div>
 
-            <div class="handcrafted-card" style="padding: 1.5rem;">
+            <div class="handcrafted-card" style="background: var(--bg-main);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="font-family: var(--font-display);">Live Fleet Monitor</h3>
-                    <button class="premium-btn btn-outline" id="refreshBusesBtn" style="padding: 0.5rem 1rem; font-size: 0.8rem;"><i class="fas fa-sync"></i> Refresh</button>
+                    <h3 style="font-size: 1.2rem; text-transform: uppercase;">Real-Time Transit Infrastructure</h3>
+                    <button class="premium-btn btn-outline" id="refreshBusesBtn" style="padding: 0.4rem 1rem; font-size: 0.7rem;">Sync Data</button>
                 </div>
-                <div id="liveMap" style="height: 450px; border-radius: var(--radius-md); overflow: hidden;"></div>
+                <div id="liveMap" style="height: 500px; border: 1px solid var(--border); filter: grayscale(100%) contrast(1.1);"></div>
             </div>
         </main>
     </div>
@@ -82,9 +79,14 @@
     <script type="module">
         import { apiFetch, logout, getUserData } from './js/api.js';
 
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
+
         const user = getUserData();
-        if (user) document.getElementById('studentName').textContent = user.name.split(' ')[0];
+        if (user) document.getElementById('studentName').textContent = user.name.toUpperCase();
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
 
         let map = L.map('liveMap').setView([31.25, 75.70], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -100,7 +102,7 @@
                 buses.buses.forEach(bus => {
                     if (bus.location && bus.location.coordinates) {
                         const [lat, lng] = bus.location.coordinates;
-                        L.marker([lat, lng]).addTo(map).bindPopup(`Bus ${bus.busNumber}`);
+                        L.marker([lat, lng]).addTo(map).bindPopup(`UNIT ${bus.busNumber}`);
                     }
                 });
             } catch (err) {}
