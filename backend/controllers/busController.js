@@ -5,7 +5,9 @@ const Bus = require("../models/bus");
 ================================= */
 const getBuses = async (req, res) => {
   try {
-    const buses = await Bus.find().populate("driverId", "name email");
+    const buses = await Bus.find()
+      .populate("driverId", "name email")
+      .populate("routeId");
 
     res.json({ success: true, buses });
 
@@ -39,7 +41,7 @@ const getActiveBuses = async (req, res) => {
 ================================= */
 const createBus = async (req, res) => {
   try {
-    const { busNumber, capacity, status } = req.body;
+    const { busNumber, busType, routeId, capacity, status } = req.body;
 
     if (!busNumber || !capacity) {
       return res.status(400).json({
@@ -59,6 +61,8 @@ const createBus = async (req, res) => {
 
     const bus = await Bus.create({
       busNumber,
+      busType: busType || "Standard",
+      routeId: routeId || null,
       capacity: Number(capacity),
       seatsAvailable: Number(capacity),
       status: status || "active",

@@ -9,6 +9,11 @@ const busSchema = new mongoose.Schema(
     trim: true
   },
 
+  busType: {
+    type: String,
+    default: "Standard"
+  },
+
   capacity: {
     type: Number,
     required: true,
@@ -23,7 +28,13 @@ const busSchema = new mongoose.Schema(
   status: {
     type: String,
     enum: ["active", "inactive", "maintenance"],
-    default: "inactive"
+    default: "active"
+  },
+
+  routeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Route",
+    default: null
   },
 
   driverId: {
@@ -33,8 +44,8 @@ const busSchema = new mongoose.Schema(
   },
 
   currentLocation: {
-    lat: { type: Number, default: 0 },
-    lng: { type: Number, default: 0 }
+    lat: { type: Number, default: 31.2536 },
+    lng: { type: Number, default: 75.7033 }
   }
 },
 {
