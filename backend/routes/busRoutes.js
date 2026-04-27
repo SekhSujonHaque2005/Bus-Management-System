@@ -7,7 +7,8 @@ const {
   updateBus,
   deleteBus,
   getBusLocation,
-  updateBusLocation
+  updateBusLocation,
+  getBusesByRoute
 } = require("../controllers/busController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -18,6 +19,7 @@ const { authorize } = require("../middleware/roleMiddleware");
 ================================= */
 router.get("/", getBuses);
 router.get("/location/:id", getBusLocation);
+router.get("/route/:id", getBusesByRoute);
 
 /* ===============================
    DRIVER & ADMIN

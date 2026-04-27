@@ -226,6 +226,18 @@ const getBusStats = async (req, res) => {
   }
 };
 
+/* ===============================
+   GET BUSES BY ROUTE
+================================= */
+const getBusesByRoute = async (req, res) => {
+  try {
+    const buses = await Bus.find({ routeId: req.params.id, status: "active" });
+    res.json({ success: true, buses });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getBuses,
   getActiveBuses,
@@ -234,5 +246,6 @@ module.exports = {
   deleteBus,
   getBusLocation,
   updateBusLocation,
-  getBusStats
+  getBusStats,
+  getBusesByRoute
 };
