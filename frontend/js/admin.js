@@ -1,358 +1,522 @@
-import { apiFetch, getUserData, getToken, showToast, setupDashboardUI } from './api.js';
+import {
+  apiFetch,
+  getUserData,
+  getToken,
+  showToast,
+  setupDashboardUI,
+  SOCKET_URL
+} from './api.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check Auth
-    const token = getToken();
-    const user = getUserData();
-    if (!token || !user || user.role !== 'admin') {
-        window.location.href = 'login.html';
-        return;
+  /* ===============================
+     AUTH CHECK
+  =============================== */
+  const token = getToken();
+  const user = getUserData();
+
+  if (!token || !user || user.role !== 'admin') {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  setupDashboardUI();
+
+  /* ===============================
+     LIVE SOCKET
+  =============================== */
+  const socket = io(SOCKET_URL);
+
+  socket.on("connect", () => {
+    console.log("✅ Admin connected to live server");
+  });
+
+  socket.on("live-location", (data) => {
+    console.log("📍 Live Bus:", data);
+  });
+
+  socket.on("emergency-alert", (data) => {
+    showToast("🚨 EMERGENCY: " + data.driverName, "error");
+  });
+
+  socket.on("delay-report", (data) => {
+    showToast("⚠ Delay Report: " + data.reason, "warning");
+  });
+
+  /* ===============================
+     PROFILE
+  =============================== */
+  const nameEl = document.getElementById('adminName');
+  const initialEl = document.getElementById('profileInitials');
+
+  if (nameEl) nameEl.textContent = user.name || "Admin";
+  if (initialEl) initialEl.textContent = (user.name || "A").charAt(0).toUpperCase();
+
+  let chartInstance = null;
+  let allUsers = [];
+
+  /* ===============================
+     LOAD DATA
+  =============================== */
+  const loadData = async () => {
+    try {
+      const buses = await apiFetch('/buses');
+      const routes = await apiFetch('/routes');
+      const stats = await apiFetch('/admin/stats');
+      const usersRes = await apiFetch('/auth/users');
+
+      allUsers = usersRes.users || usersRes;
+
+      document.getElementById('totalBuses').textContent =
+        stats.totalBuses || buses.length;
+
+      document.getElementById('totalRoutes').textContent =
+        stats.totalRoutes || routes.length;
+
+      document.getElementById('totalBookings').textContent =
+        stats.totalBookings || 0;
+
+      renderBusTable(buses);
+      renderUsers(allUsers);
+      renderChart(buses);
+
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to load admin data", "error");
+    }
+  };
+
+  /* ===============================
+     BUS TABLE
+  =============================== */
+  function renderBusTable(buses) {
+    const tbody = document.getElementById('busesTableBody');
+    if (!tbody) return;
+
+    if (!buses.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5">No buses found</td>
+        </tr>
+      `;
+      return;
     }
 
-    setupDashboardUI();
-    const nameEl = document.getElementById('adminName');
-    if (nameEl) nameEl.textContent = user.name;
-    const initialEl = document.getElementById('profileInitials');
-    if (initialEl) initialEl.textContent = user.name.charAt(0).toUpperCase();
+    tbody.innerHTML = buses.map(bus => `
+      <tr>
+        <td>${bus.busNumber}</td>
+        <td>${bus.capacity}</td>
+        <td>${bus.seatsAvailable}</td>
+        <td>${bus.status}</td>
+        <td>
+          <button class="edit-bus-btn" data-id="${bus._id}">
+            Edit
+          </button>
 
-    let chartInstance = null;
-    let allUsers = [];
+          <button class="delete-bus-btn" data-id="${bus._id}">
+            Delete
+          </button>
+        </td>
+      </tr>
+    `).join("");
 
-    const loadData = async () => {
-        try {
-            const buses = await apiFetch('/buses');
-            // keep compatibility: existing endpoint + new spec endpoint
-            const routes = await apiFetch('/routes').catch(() => apiFetch('/buses/routes'));
-            const stats = await apiFetch('/admin/stats').catch(() => apiFetch('/buses/stats'));
-            const users = await apiFetch('/auth/users');
-            allUsers = users;
+    document.querySelectorAll(".delete-bus-btn").forEach(btn => {
+      btn.addEventListener("click", deleteBus);
+    });
 
-            document.getElementById('totalBuses').textContent = stats.totalBuses || buses.length;
-            document.getElementById('totalRoutes').textContent = stats.totalRoutes || routes.length;
-            document.getElementById('totalBookings').textContent = stats.totalBookings || 0;
+    document.querySelectorAll(".edit-bus-btn").forEach(btn => {
+      btn.addEventListener("click", editBus);
+    });
+  }
 
-            const tbody = document.getElementById('busesTableBody');
-            
-            if (buses.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #94A3B8; padding: 2rem;">No buses in fleet. Add your first bus to get started.</td></tr>';
-            } else {
-                tbody.innerHTML = buses.map(bus => `
-                    <tr style="border-bottom: 1px solid #E2E8F0;">
-                        <td style="font-weight: 500; padding: 1rem;">${bus.busNumber}</td>
-                        <td style="padding: 1rem;">${bus.capacity}</td>
-                        <td style="color: #4F46E5; font-weight: 600; padding: 1rem;">${bus.seatsAvailable}</td>
-                        <td style="padding: 1rem;">
-                            <span style="display: inline-block; padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; ${
-                                bus.status === 'active' 
-                                    ? 'background: #DCFCE7; color: #166534;' 
-                                    : 'background: #FEE2E2; color: #991B1B;'
-                            }">
-                                ${bus.status.toUpperCase()}
-                            </span>
-                        </td>
-                        <td style="padding: 1rem; display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary edit-bus-btn" data-id="${bus._id}" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-color: var(--primary-color); color: var(--primary-color);">Edit</button>
-                            <button class="btn btn-secondary delete-bus-btn" data-id="${bus._id}" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-color: var(--danger); color: var(--danger);">Delete</button>
-                        </td>
-                    </tr>
-                `).join('');
+  /* ===============================
+     USERS TABLE
+  =============================== */
+  function renderUsers(users) {
+    const tbody = document.getElementById("usersTableBody");
+    if (!tbody) return;
 
-                // Attach event listeners
-                document.querySelectorAll('.delete-bus-btn').forEach(btn => {
-                    btn.addEventListener('click', handleDeleteBus);
-                });
-                
-                document.querySelectorAll('.edit-bus-btn').forEach(btn => {
-                    btn.addEventListener('click', handleEditBus);
-                });
-            }
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td>${u.name}</td>
+        <td>${u.email}</td>
+        <td>${u.role}</td>
+        <td>
+          <button class="delete-user-btn" data-id="${u._id}">
+            Delete
+          </button>
+        </td>
+      </tr>
+    `).join("");
 
-            renderChart(buses);
-            renderUsers(allUsers);
-        } catch (error) {
-            console.error('Error loading admin data:', error);
-            showToast('Failed to load admin data: ' + error.message, 'error');
-        }
-    };
+    document.querySelectorAll(".delete-user-btn").forEach(btn => {
+      btn.addEventListener("click", deleteUser);
+    });
+  }
 
-    const renderUsers = (users) => {
-        const tbody = document.getElementById('usersTableBody');
-        if (!tbody) return;
-        
-        if (users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #94A3B8; padding: 2rem;">No users found.</td></tr>';
-        } else {
-            tbody.innerHTML = users.map(user => `
-                <tr style="border-bottom: 1px solid #E2E8F0;">
-                    <td style="font-weight: 500; padding: 1rem;">${user.name}</td>
-                    <td style="padding: 1rem; color: var(--text-muted);">${user.email}</td>
-                    <td style="padding: 1rem;">
-                        <span style="display: inline-block; padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; ${
-                            user.role === 'admin' ? 'background: #FEF3C7; color: #92400E;' : 
-                            user.role === 'driver' ? 'background: #E0E7FF; color: #3730A3;' :
-                            'background: #F1F5F9; color: var(--text-main);'
-                        }">
-                            ${user.role.toUpperCase()}
-                        </span>
-                    </td>
-                    <td style="padding: 1rem;">
-                        <button class="btn btn-secondary delete-user-btn" data-id="${user._id}" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-color: var(--danger); color: var(--danger);">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
+  /* ===============================
+     CHART
+  =============================== */
+  function renderChart(buses) {
+    const chartEl = document.getElementById("utilizationChart");
+    if (!chartEl || typeof Chart === "undefined") return;
 
-            document.querySelectorAll('.delete-user-btn').forEach(btn => {
-                btn.addEventListener('click', handleDeleteUser);
-            });
-        }
-    };
+    const ctx = chartEl.getContext("2d");
 
-    const renderChart = (buses) => {
-        const ctx = document.getElementById('utilizationChart').getContext('2d');
-        
-        const labels = buses.length ? buses.map(b => b.busNumber) : ['No Data'];
-        const bookedData = buses.length ? buses.map(b => b.capacity - b.seatsAvailable) : [0];
-        const availableData = buses.length ? buses.map(b => b.seatsAvailable) : [0];
+    if (chartInstance) chartInstance.destroy();
 
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
+    chartInstance = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: buses.map(b => b.busNumber),
+        datasets: [
+          {
+            label: "Booked",
+            data: buses.map(b => b.capacity - b.seatsAvailable)
+          },
+          {
+            label: "Available",
+            data: buses.map(b => b.seatsAvailable)
+          }
+        ]
+      },
+      options: {
+        responsive: true
+      }
+    });
+  }
 
-        try {
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Seats Booked',
-                            data: bookedData,
-                            backgroundColor: '#4F46E5',
-                            borderRadius: 4,
-                            borderSkipped: false
-                        },
-                        {
-                            label: 'Seats Available',
-                            data: availableData,
-                            backgroundColor: '#E2E8F0',
-                            borderRadius: 4,
-                            borderSkipped: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { 
-                            stacked: true, 
-                            grid: { display: false } 
-                        },
-                        y: { 
-                            stacked: true, 
-                            beginAtZero: true, 
-                            border: { display: false } 
-                        }
-                    },
-                    plugins: {
-                        legend: { 
-                            position: 'top', 
-                            align: 'end', 
-                            labels: { usePointStyle: true, boxWidth: 8 } 
-                        }
-                    }
-                }
-            });
-        } catch (err) {
-            console.error('Chart error:', err);
-        }
-    };
+  /* ===============================
+     ADD BUS
+  =============================== */
+  document.getElementById("addBusForm")
+    ?.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const handleDeleteBus = async (e) => {
-        const busId = e.target.getAttribute('data-id');
-        if (confirm('Are you sure you want to completely delete this bus from the fleet?')) {
-            try {
-                e.target.disabled = true;
-                e.target.textContent = '...';
-                await apiFetch(`/buses/${busId}`, 'DELETE');
-                showToast('Bus deleted successfully', 'success');
-                loadData();
-            } catch (error) {
-                showToast('Failed to delete bus: ' + error.message, 'error');
-                e.target.disabled = false;
-                e.target.textContent = 'Delete';
-            }
-        }
-    };
+      const busNumber =
+        document.getElementById("busNumber").value.trim();
 
-    const handleDeleteUser = async (e) => {
-        const userId = e.target.getAttribute('data-id');
-        if (confirm('Are you sure you want to completely delete this user?')) {
-            try {
-                e.target.disabled = true;
-                e.target.textContent = '...';
-                await apiFetch(`/auth/users/${userId}`, 'DELETE');
-                showToast('User deleted successfully', 'success');
-                loadData();
-            } catch (error) {
-                showToast('Failed to delete user: ' + error.message, 'error');
-                e.target.disabled = false;
-                e.target.textContent = 'Delete';
-            }
-        }
-    };
+      const capacity =
+        parseInt(document.getElementById("capacity").value);
 
-    const handleEditBus = async (e) => {
-        const busId = e.target.getAttribute('data-id');
-        const newStatus = prompt('Enter new status (active/inactive/maintenance):');
-        if (newStatus && ['active', 'inactive', 'maintenance'].includes(newStatus.toLowerCase())) {
-            try {
-                await apiFetch(`/buses/${busId}`, 'PUT', { status: newStatus.toLowerCase() });
-                showToast('Bus status updated!', 'success');
-                loadData();
-            } catch (error) {
-                showToast('Failed to update bus: ' + error.message, 'error');
-            }
-        } else if (newStatus) {
-            showToast('Invalid status. Use active, inactive, or maintenance.', 'error');
-        }
-    };
-
-    // User Search Logic
-    const searchUsersInput = document.getElementById('searchUsers');
-    if (searchUsersInput) {
-        searchUsersInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filtered = allUsers.filter(u => 
-                u.name.toLowerCase().includes(searchTerm) || 
-                u.email.toLowerCase().includes(searchTerm)
-            );
-            renderUsers(filtered);
+      try {
+        await apiFetch("/buses", "POST", {
+          busNumber,
+          capacity,
+          status: "inactive"
         });
-    }
 
-    // Initial Load
-    loadData();
+        showToast("Bus Added", "success");
+        e.target.reset();
+        loadData();
 
-    // Add Bus Form
-    const addBusForm = document.getElementById('addBusForm');
-    if (addBusForm) {
-        addBusForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = addBusForm.querySelector('button');
-            const originalText = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = 'Adding...';
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    });
 
-            const busNumber = document.getElementById('busNumber').value.trim();
-            const capacity = parseInt(document.getElementById('capacity').value);
+  /* ===============================
+     ADD ROUTE
+  =============================== */
+  document.getElementById("addRouteForm")
+    ?.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-            if (!busNumber) {
-                showToast('Please enter a bus number', 'error');
-                btn.disabled = false;
-                btn.textContent = originalText;
-                return;
-            }
+      const source =
+        document.getElementById("routeSource").value.trim();
 
-            if (capacity < 1) {
-                showToast('Capacity must be at least 1', 'error');
-                btn.disabled = false;
-                btn.textContent = originalText;
-                return;
-            }
+      const destination =
+        document.getElementById("routeDest").value.trim();
 
-            try {
-                await apiFetch('/buses', 'POST', { busNumber, capacity });
-                showToast('Bus added successfully!', 'success');
-                addBusForm.reset();
-                loadData(); // Reload table and chart
-            } catch (error) {
-                showToast(error.message || 'Error adding bus', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = originalText;
-            }
+      try {
+        await apiFetch("/routes", "POST", {
+          source,
+          destination,
+          stops: []
         });
+
+        showToast("Route Added", "success");
+        e.target.reset();
+        loadData();
+
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    });
+
+  /* ===============================
+     DELETE BUS
+  =============================== */
+  async function deleteBus(e) {
+    try {
+      await apiFetch(`/buses/${e.target.dataset.id}`, "DELETE");
+      showToast("Bus Deleted", "success");
+      loadData();
+
+    } catch (error) {
+      showToast(error.message, "error");
     }
+  }
 
-    // Add Route Form
-    const addRouteForm = document.getElementById('addRouteForm');
-    if (addRouteForm) {
-        addRouteForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = addRouteForm.querySelector('button');
-            const originalText = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = 'Adding...';
+  /* ===============================
+     EDIT BUS
+  =============================== */
+  async function editBus(e) {
+    const status = prompt(
+      "Enter status: active / inactive / maintenance"
+    );
 
-            const source = document.getElementById('routeSource').value.trim();
-            const destination = document.getElementById('routeDest').value.trim();
+    if (!status) return;
 
-            if (!source || !destination) {
-                showToast('Please fill in all route details', 'error');
-                btn.disabled = false;
-                btn.textContent = originalText;
-                return;
-            }
+    try {
+      await apiFetch(`/buses/${e.target.dataset.id}`, "PUT", {
+        status
+      });
 
-            try {
-                await apiFetch('/buses/routes', 'POST', { source, destination, stops: [] });
-                showToast('Route added successfully!', 'success');
-                addRouteForm.reset();
-                loadData();
-            } catch (error) {
-                showToast(error.message || 'Error adding route', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = originalText;
-            }
-        });
+      showToast("Bus Updated", "success");
+      loadData();
+
+    } catch (error) {
+      showToast(error.message, "error");
     }
+  }
 
-    // Export CSV
-    const exportCsvBtn = document.getElementById('exportCsvBtn');
-    if (exportCsvBtn) {
-        exportCsvBtn.addEventListener('click', async () => {
-            try {
-                const buses = await apiFetch('/buses');
-                if (!buses.length) {
-                    showToast('No data to export', 'error');
-                    return;
-                }
-                
-                const headers = ['Bus Number', 'Capacity', 'Available Seats', 'Status'];
-                const csvRows = [headers.join(',')];
-                
-                buses.forEach(bus => {
-                    csvRows.push(`"${bus.busNumber}",${bus.capacity},${bus.seatsAvailable},"${bus.status}"`);
-                });
+  /* ===============================
+     DELETE USER
+  =============================== */
+  async function deleteUser(e) {
+    try {
+      await apiFetch(`/auth/users/${e.target.dataset.id}`, "DELETE");
 
-                const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "smart_bus_fleet_" + new Date().toISOString().split('T')[0] + ".csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showToast('Fleet data exported successfully!', 'success');
-            } catch (error) {
-                showToast('Failed to export data: ' + error.message, 'error');
-            }
-        });
+      showToast("User Deleted", "success");
+      loadData();
+
+    } catch (error) {
+      showToast(error.message, "error");
     }
+  }
 
-    // Refresh data every 30 seconds
-    setInterval(loadData, 30000);
+  /* ===============================
+     SEARCH USERS
+  =============================== */
+  document.getElementById("searchUsers")
+    ?.addEventListener("input", (e) => {
+      const val = e.target.value.toLowerCase();
+
+      const filtered = allUsers.filter(u =>
+        u.name.toLowerCase().includes(val) ||
+        u.email.toLowerCase().includes(val)
+      );
+
+      renderUsers(filtered);
+    });
+
+  /* ===============================
+     EXPORT CSV
+  =============================== */
+  document.getElementById("exportCsvBtn")
+    ?.addEventListener("click", async () => {
+      const buses = await apiFetch("/buses");
+
+      let csv =
+        "Bus Number,Capacity,Seats Available,Status\n";
+
+      buses.forEach(bus => {
+        csv += `${bus.busNumber},${bus.capacity},${bus.seatsAvailable},${bus.status}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "fleet.csv";
+      a.click();
+    });
+
+  /* ===============================
+     AUTO REFRESH
+  =============================== */
+  setInterval(loadData, 30000);
+
+  /* ===============================
+     INITIAL LOAD
+  =============================== */
+  loadData();
 });
 
-// Sidebar Scrolling Navigation
+/* ===============================
+   SIDEBAR LINKS
+=============================== */
 const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
-if(sidebarLinks.length >= 4) {
-  sidebarLinks[0].addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'}); });
-  sidebarLinks[1].addEventListener('click', (e) => { e.preventDefault(); document.getElementById('addBusForm')?.scrollIntoView({behavior: 'smooth'}); });
-  sidebarLinks[2].addEventListener('click', (e) => { e.preventDefault(); document.getElementById('addRouteForm')?.scrollIntoView({behavior: 'smooth'}); });
-  sidebarLinks[3].addEventListener('click', (e) => { e.preventDefault(); document.getElementById('usersSection')?.scrollIntoView({behavior: 'smooth'}); });
-}
 
+if (sidebarLinks.length >= 4) {
+  sidebarLinks[0].addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  sidebarLinks[1].addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('addBusForm')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  sidebarLinks[2].addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('addRouteForm')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  sidebarLinks[3].addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('usersSection')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  });
+}
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ===============================
+  // LOGOUT BUTTONS
+  // ===============================
+  document.getElementById("nav-logout")
+  ?.addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "login.html";
+  });
+
+  document.getElementById("topLogoutBtn")
+  ?.addEventListener("click", () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "login.html";
+  });
+
+  // ===============================
+  // PROFILE DROPDOWN
+  // ===============================
+  const profileAvatar =
+    document.getElementById("profileAvatar");
+
+  const profileDropdown =
+    document.getElementById("profileDropdown");
+
+  profileAvatar?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    profileDropdown.classList.toggle("active");
+  });
+
+  // ===============================
+  // NOTIFICATION DROPDOWN
+  // ===============================
+  const bell =
+    document.getElementById("notificationBell");
+
+  const notifDropdown =
+    document.getElementById("notificationDropdown");
+
+  bell?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    notifDropdown.classList.toggle("active");
+  });
+
+  // ===============================
+  // MARK ALL READ
+  // ===============================
+  document.getElementById("markReadBtn")
+  ?.addEventListener("click", () => {
+
+    const badge =
+      document.getElementById("notifBadge");
+
+    if (badge) badge.style.display = "none";
+
+    const list =
+      document.getElementById("notifList");
+
+    if (list) {
+      list.innerHTML = `
+        <div style="padding:1rem;text-align:center;color:gray;">
+          No new notifications
+        </div>
+      `;
+    }
+  });
+
+  // ===============================
+  // CLOSE DROPDOWNS OUTSIDE CLICK
+  // ===============================
+  document.addEventListener("click", (e) => {
+
+    if (
+      profileDropdown &&
+      !profileDropdown.contains(e.target)
+    ) {
+      profileDropdown.classList.remove("active");
+    }
+
+    if (
+      notifDropdown &&
+      !notifDropdown.contains(e.target)
+    ) {
+      notifDropdown.classList.remove("active");
+    }
+
+  });
+
+});
+
+// ===============================
+// PROFILE DROPDOWN
+// ===============================
+const profileAvatar =
+  document.getElementById("profileAvatar");
+
+const profileDropdown =
+  document.getElementById("profileDropdown");
+
+profileAvatar?.addEventListener("click", () => {
+  profileDropdown.classList.toggle("active");
+});
+
+// ===============================
+// NOTIFICATION DROPDOWN
+// ===============================
+const bell =
+  document.getElementById("notificationBell");
+
+const notifDropdown =
+  document.getElementById("notificationDropdown");
+
+bell?.addEventListener("click", () => {
+  notifDropdown.classList.toggle("active");
+});
+
+// ===============================
+// MARK ALL READ
+// ===============================
+document.getElementById("markReadBtn")
+?.addEventListener("click", () => {
+  document.getElementById("notifBadge").style.display = "none";
+
+  document.getElementById("notifList").innerHTML = `
+    <div style="padding:1rem;text-align:center;color:gray;">
+      No new notifications
+    </div>
+  `;
+});
+
+// ===============================
+// CLOSE DROPDOWNS OUTSIDE CLICK
+// ===============================
+document.addEventListener("click", (e) => {
+  if (!profileDropdown.contains(e.target)) {
+    profileDropdown.classList.remove("active");
+  }
+
+  if (!notifDropdown.contains(e.target)) {
+    notifDropdown.classList.remove("active");
+  }
+});

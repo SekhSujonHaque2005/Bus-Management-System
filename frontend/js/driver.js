@@ -1,208 +1,222 @@
-import { getUserData, getToken, showToast, SOCKET_URL, setupDashboardUI } from './api.js';
+import {
+  getUserData,
+  getToken,
+  showToast,
+  SOCKET_URL,
+  setupDashboardUI
+} from "./api.js";
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // Check Auth
-    const token = getToken();
-    const user = getUserData();
-    if (!token || !user || user.role !== 'driver') {
-        window.location.href = 'login.html';
-        return;
+document.addEventListener("DOMContentLoaded", () => {
+
+  const token = getToken();
+  const user = getUserData();
+
+  if (!token || !user || user.role !== "driver") {
+    window.location.href = "login.html";
+    return;
+  }
+
+  setupDashboardUI();
+
+  const socket = io(SOCKET_URL);
+
+  const driverName = user.name || "Driver";
+
+  // ===============================
+  // PROFILE
+  // ===============================
+  document.getElementById("driverName").textContent = driverName;
+  document.getElementById("profileInitials").textContent =
+    driverName.charAt(0).toUpperCase();
+
+  // ===============================
+  // LOGOUT
+  // ===============================
+  function logout() {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "login.html";
+  }
+
+  document.getElementById("nav-logout")
+    ?.addEventListener("click", logout);
+
+  document.getElementById("topLogoutBtn")
+    ?.addEventListener("click", logout);
+
+  // ===============================
+  // DROPDOWNS
+  // ===============================
+  document.getElementById("profileAvatar")
+  ?.addEventListener("click", () => {
+    document.getElementById("profileDropdown")
+      .classList.toggle("active");
+  });
+
+  document.getElementById("notificationBell")
+  ?.addEventListener("click", () => {
+    document.getElementById("notificationDropdown")
+      .classList.toggle("active");
+  });
+
+  // ===============================
+  // TRIP
+  // ===============================
+  const startBtn =
+    document.getElementById("startTripBtn");
+
+  const endBtn =
+    document.getElementById("endTripBtn");
+
+  const activeTrip =
+    document.getElementById("activeTripDetails");
+
+  const timerEl =
+    document.getElementById("tripTimer");
+
+  let seats = 50;
+  let watchId = null;
+  let timer = null;
+  let startTime = null;
+
+  function updateTimer() {
+    if (!startTime) return;
+
+    const diff = Date.now() - startTime;
+
+    const hrs = String(
+      Math.floor(diff / 3600000)
+    ).padStart(2, "0");
+
+    const mins = String(
+      Math.floor((diff % 3600000) / 60000)
+    ).padStart(2, "0");
+
+    const secs = String(
+      Math.floor((diff % 60000) / 1000)
+    ).padStart(2, "0");
+
+    timerEl.textContent =
+      `${hrs}:${mins}:${secs}`;
+  }
+
+  startBtn?.addEventListener("click", () => {
+
+    if (!navigator.geolocation) {
+      showToast("GPS not supported", "error");
+      return;
     }
 
-    setupDashboardUI();
-    const nameEl = document.getElementById('driverName');
-    if (nameEl) nameEl.textContent = user.name;
-    const initialEl = document.getElementById('profileInitials');
-    if (initialEl) initialEl.textContent = user.name.charAt(0).toUpperCase();
+    startBtn.disabled = true;
+    endBtn.disabled = false;
+    activeTrip.style.display = "block";
 
-    const startBtn = document.getElementById('startTripBtn');
-    const endBtn = document.getElementById('endTripBtn');
-    const activeTripDetails = document.getElementById('activeTripDetails');
-    const tripTimerDisplay = document.getElementById('tripTimer');
-    const emergencyBtn = document.getElementById('emergencyBtn');
-    const delayBtn = document.getElementById('delayBtn');
-    
-    const decSeats = document.getElementById('decSeats');
-    const incSeats = document.getElementById('incSeats');
-    const seatCountDisplay = document.getElementById('seatCount');
-    let currentSeats = 50;
-    
-    let locationInterval;
-    let timerInterval;
-    let tripStartTime;
-    let isTripActive = false;
-    
-    const socket = io(SOCKET_URL, {
-        reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        reconnectionAttempts: 5
-    });
+    startTime = Date.now();
 
-    const updateTimer = () => {
-        if (!isTripActive) return;
-        const now = new Date();
-        const diff = now - tripStartTime;
-        const hours = String(Math.floor(diff / 3600000)).padStart(2, '0');
-        const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-        const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-        tripTimerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
-    };
+    timer = setInterval(updateTimer, 1000);
 
-    // Seat Controls
-    if (decSeats) {
-        decSeats.addEventListener('click', () => {
-            if (currentSeats > 0) {
-                currentSeats--;
-                seatCountDisplay.textContent = currentSeats;
-            }
-        });
-    }
+    showToast("Trip Started", "success");
 
-    if (incSeats) {
-        incSeats.addEventListener('click', () => {
-            currentSeats++;
-            seatCountDisplay.textContent = currentSeats;
-        });
-    }
+    watchId =
+      navigator.geolocation.watchPosition(
 
-    // Start Trip
-    if (startBtn) {
-        startBtn.addEventListener('click', async () => {
-            try {
-                startBtn.disabled = true;
-                endBtn.disabled = false;
-                activeTripDetails.style.display = 'block';
-                isTripActive = true;
+        (pos) => {
 
-                tripStartTime = new Date();
-                timerInterval = setInterval(updateTimer, 1000);
-                updateTimer(); // Initial call
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
 
-                // Simulate GPS location updates every 3 seconds
-                let currentLat = 31.2560;
-                let currentLng = 75.7051;
+          socket.emit("driver-location", {
+            driverId: user._id,
+            driverName,
+            lat,
+            lng,
+            availableSeats: seats
+          });
 
-                locationInterval = setInterval(() => {
-                    // Slightly modify location (simulate movement)
-                    currentLat += (Math.random() - 0.5) * 0.001;
-                    currentLng += (Math.random() - 0.5) * 0.001;
+          console.log("Live:", lat, lng);
+        },
 
-                    // Emit location to all connected clients
-                    socket.emit('update-location', {
-                        busId: user._id, // Using driver ID as identifier
-                        driverName: user.name,
-                        lat: currentLat,
-                        lng: currentLng,
-                        availableSeats: currentSeats,
-                        speed: Math.floor(Math.random() * 40) + 20 + ' km/h',
-                        timestamp: new Date().toLocaleTimeString()
-                    });
+        () => {
+          showToast(
+            "Failed to share live location",
+            "error"
+          );
+        },
 
-                    console.log('📍 Location broadcast:', { lat: currentLat.toFixed(5), lng: currentLng.toFixed(5) });
-                }, 3000);
-
-                showToast('Trip started! Broadcasting live location...', 'success');
-            } catch (error) {
-                showToast('Error starting trip: ' + error.message, 'error');
-                startBtn.disabled = false;
-                endBtn.disabled = true;
-                isTripActive = false;
-            }
-        });
-    }
-
-    // End Trip
-    if (endBtn) {
-        endBtn.addEventListener('click', () => {
-            startBtn.disabled = false;
-            endBtn.disabled = true;
-            activeTripDetails.style.display = 'none';
-            isTripActive = false;
-            
-            clearInterval(locationInterval);
-            clearInterval(timerInterval);
-            tripTimerDisplay.textContent = '00:00:00';
-
-            showToast('Trip ended. Data saved.', 'success');
-        });
-    }
-
-    // Emergency Button
-    if (emergencyBtn) {
-        emergencyBtn.addEventListener('click', () => {
-            // Emit emergency alert
-            socket.emit('emergency-alert', {
-                driverId: user._id,
-                driverName: user.name,
-                timestamp: new Date(),
-                message: 'EMERGENCY ALERT from driver'
-            });
-            
-            showToast('🚨 EMERGENCY ALERT SENT to Administration!', 'error');
-        });
-    }
-
-    // Delay Button
-    if (delayBtn) {
-        delayBtn.addEventListener('click', () => {
-            const delayReason = prompt("Please enter the reason for the delay (e.g. Traffic, Breakdown):");
-            if (delayReason) {
-                socket.emit('delay-report', {
-                    driverId: user._id,
-                    driverName: user.name,
-                    timestamp: new Date(),
-                    reason: delayReason
-                });
-                showToast(`Delay reported: ${delayReason}`, 'warning');
-            }
-        });
-    }
-
-    // Socket Events
-    socket.on('connect', () => {
-        console.log('✅ Connected to socket server as driver');
-        showToast('Connected to server', 'success');
-    });
-
-    socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
-        showToast('Connection error. Will retry automatically.', 'error');
-    });
-
-    socket.on('disconnect', () => {
-        console.log('❌ Disconnected from socket server');
-        if (isTripActive) {
-            showToast('Lost connection! Please check your internet.', 'error');
+        {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0
         }
-    });
+      );
+  });
 
-    // Listen for student tracking requests
-    socket.on('student-tracking', (data) => {
-        console.log('Student tracking request received:', data);
-    });
+  endBtn?.addEventListener("click", () => {
 
-    // Listen for admin messages
-    socket.on('admin-message', (data) => {
-        console.log('Message from admin:', data);
-        showToast(data.message, 'warning');
-    });
+    startBtn.disabled = false;
+    endBtn.disabled = true;
 
-    // Add CSS animation if not present
-    if (!document.querySelector('style[data-driver-styles]')) {
-        const style = document.createElement('style');
-        style.setAttribute('data-driver-styles', 'true');
-        style.textContent = `
-            @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.7; }
-            }
-            .trip-active {
-                animation: pulse 2s infinite;
-            }
-        `;
-        document.head.appendChild(style);
+    activeTrip.style.display = "none";
+
+    clearInterval(timer);
+
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
     }
 
-    console.log('🚐 Driver dashboard loaded successfully');
+    showToast("Trip Ended", "success");
+  });
+
+  // ===============================
+  // SEATS
+  // ===============================
+  const seatEl =
+    document.getElementById("seatCount");
+
+  seatEl.textContent = seats;
+
+  document.getElementById("decSeats")
+  ?.addEventListener("click", () => {
+    if (seats > 0) seats--;
+    seatEl.textContent = seats;
+  });
+
+  document.getElementById("incSeats")
+  ?.addEventListener("click", () => {
+    seats++;
+    seatEl.textContent = seats;
+  });
+
+  // ===============================
+  // DELAY
+  // ===============================
+  document.getElementById("delayBtn")
+  ?.addEventListener("click", () => {
+
+    const reason =
+      prompt("Enter delay reason");
+
+    if (!reason) return;
+
+    socket.emit("delay-report", {
+      driverName,
+      reason
+    });
+
+    showToast("Delay Report Sent");
+  });
+
+  // ===============================
+  // EMERGENCY
+  // ===============================
+  document.getElementById("emergencyBtn")
+  ?.addEventListener("click", () => {
+
+    socket.emit("emergency-alert", {
+      driverName
+    });
+
+    showToast("Emergency Sent", "error");
+  });
+
 });

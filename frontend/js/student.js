@@ -8,9 +8,7 @@ import {
 } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  /* ===============================
-     AUTH CHECK
-  =============================== */
+
   const token = getToken();
   const user = getUserData();
 
@@ -21,250 +19,347 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   setupDashboardUI();
 
-  /* ===============================
-     ELEMENTS
-  =============================== */
-  const nameEl = document.getElementById("studentName");
-  const initialEl = document.getElementById("profileInitials");
-  const routesTableBody = document.getElementById("routesTableBody");
-  const bookingsTableBody = document.getElementById("bookingsTableBody");
+  const socket = io(SOCKET_URL);
 
-  if (nameEl) nameEl.textContent = user.name;
-  if (initialEl) initialEl.textContent = user.name.charAt(0).toUpperCase();
+  const userName = user.name || "Student";
 
-  let allRoutes = [];
-  let allBuses = [];
-  let selectedRouteId = null;
-  let selectedBus = null;
+  document.getElementById("studentName").textContent = userName;
+  document.getElementById("profileInitials").textContent =
+    userName.charAt(0).toUpperCase();
 
-  /* ===============================
-     LOAD DATA
-  =============================== */
-  async function loadData() {
-    try {
-      // BUSES
-      const buses = await apiFetch("/buses");
-      allBuses = Array.isArray(buses) ? buses : [];
-
-      const activeBuses = allBuses.filter(
-        bus => bus.status?.toLowerCase() === "active"
-      );
-
-      const activeCount = document.getElementById("activeBusesCount");
-      if (activeCount) activeCount.textContent = activeBuses.length;
-
-      // BOOKINGS
-      const bookings = await apiFetch("/bookings/my-bookings");
-
-      const bookingCount = document.getElementById("myBookingsCount");
-      if (bookingCount) {
-        bookingCount.textContent = bookings.length;
-      }
-
-      renderBookings(bookings);
-
-      // ROUTES
-      const routes = await apiFetch("/routes");
-      allRoutes = Array.isArray(routes) ? routes : [];
-
-      renderRoutes(allRoutes);
-
-    } catch (error) {
-      console.error(error);
-      showToast("Dashboard data load failed", "error");
-    }
+  // ===============================
+  // LOGOUT
+  // ===============================
+  function logout() {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "login.html";
   }
 
-  /* ===============================
-     RENDER ROUTES
-  =============================== */
+  document.getElementById("nav-logout")
+    ?.addEventListener("click", logout);
+
+  document.getElementById("topLogoutBtn")
+    ?.addEventListener("click", logout);
+
+  // ===============================
+  // DROPDOWNS
+  // ===============================
+  document.getElementById("profileAvatar")
+    ?.addEventListener("click", () => {
+      document.getElementById("profileDropdown")
+        .classList.toggle("active");
+    });
+
+  document.getElementById("notificationBell")
+    ?.addEventListener("click", () => {
+      document.getElementById("notificationDropdown")
+        .classList.toggle("active");
+    });
+
+  document.getElementById("markReadBtn")
+    ?.addEventListener("click", () => {
+      document.getElementById("notifBadge").style.display =
+        "none";
+    });
+
+  // ===============================
+  // MAP
+  // ===============================
+  let map = null;
+  let marker = null;
+
+  if (document.getElementById("liveMap") &&
+      typeof L !== "undefined") {
+
+    map = L.map("liveMap")
+      .setView([31.2536, 75.7033], 15);
+
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    ).addTo(map);
+
+    marker = L.marker([31.2536, 75.7033])
+      .addTo(map)
+      .bindPopup("Waiting for driver...");
+  }
+
+  let allRoutes = [];
+  let myBookings = [];
+  let selectedRoute = null;
+
+  // ===============================
+  // RENDER ROUTES
+  // ===============================
   function renderRoutes(routes) {
-    if (!routesTableBody) return;
+
+    const body =
+      document.getElementById("routesTableBody");
+
+    body.innerHTML = "";
 
     if (!routes.length) {
-      routesTableBody.innerHTML = `
-        <tr>
-          <td colspan="4">No Routes Available</td>
-        </tr>
-      `;
+      body.innerHTML =
+        `<tr><td colspan="4">No Routes Found</td></tr>`;
       return;
     }
 
-    routesTableBody.innerHTML = routes
-      .map(
-        route => `
+    routes.forEach(route => {
+
+      body.innerHTML += `
       <tr>
-        <td>${route.source || "N/A"}</td>
-        <td>${route.destination || "N/A"}</td>
-        <td>${route.stops?.join(", ") || "Direct"}</td>
+        <td>${route.source}</td>
+        <td>${route.destination}</td>
+        <td>${route.stops?.join(", ") || "-"}</td>
         <td>
-          <button class="book-btn" data-id="${route._id}">
-            Book Seat
+          <button class="btn bookBtn"
+          data-id="${route._id}">
+          Book Seat
           </button>
         </td>
       </tr>
-    `
-      )
-      .join("");
-
-    document.querySelectorAll(".book-btn").forEach(btn => {
-      btn.addEventListener("click", handleBookSeat);
+      `;
     });
+
+    document
+      .querySelectorAll(".bookBtn")
+      .forEach(btn => {
+
+        btn.addEventListener("click", () => {
+
+          selectedRoute =
+            btn.dataset.id;
+
+          document
+            .getElementById("bookingModal")
+            .classList.add("active");
+
+          const route =
+            allRoutes.find(
+              r => r._id === selectedRoute
+            );
+
+          document
+            .getElementById("modalDestination")
+            .textContent =
+            route.destination;
+
+          document
+            .getElementById("modalBuses")
+            .textContent =
+            "Available";
+        });
+      });
   }
 
-  /* ===============================
-     RENDER BOOKINGS
-  =============================== */
-  function renderBookings(bookings) {
-    if (!bookingsTableBody) return;
+  // ===============================
+  // RENDER BOOKINGS
+  // ===============================
+  function renderBookings() {
 
-    if (!bookings.length) {
-      bookingsTableBody.innerHTML = `
-        <tr>
-          <td colspan="5">No Bookings Found</td>
-        </tr>
-      `;
+    const body =
+      document.getElementById("bookingsTableBody");
+
+    body.innerHTML = "";
+
+    if (!myBookings.length) {
+      body.innerHTML =
+        `<tr><td colspan="5">No Bookings Yet</td></tr>`;
       return;
     }
 
-    bookingsTableBody.innerHTML = bookings
-      .map(
-        booking => `
+    myBookings.forEach(booking => {
+
+      body.innerHTML += `
       <tr>
-        <td>${booking.busId?.busNumber || "N/A"}</td>
-        <td>${booking.routeId?.destination || "N/A"}</td>
+        <td>${booking.busId?.busNumber || "-"}</td>
+        <td>${booking.routeId?.destination || "-"}</td>
         <td>${booking.seatNumber}</td>
         <td>${booking.status}</td>
         <td>
-          ${
-            booking.status === "confirmed"
-              ? `<button class="cancel-btn" data-id="${booking._id}">
-                   Cancel
-                 </button>`
-              : "-"
-          }
+          <button class="btn cancelBtn"
+          data-id="${booking._id}">
+          Cancel
+          </button>
         </td>
       </tr>
-    `
-      )
-      .join("");
-
-    document.querySelectorAll(".cancel-btn").forEach(btn => {
-      btn.addEventListener("click", cancelBooking);
+      `;
     });
+
+    document
+      .querySelectorAll(".cancelBtn")
+      .forEach(btn => {
+
+        btn.addEventListener("click",
+        async () => {
+
+          await apiFetch(
+            `/bookings/${btn.dataset.id}`,
+            "DELETE"
+          );
+
+          showToast(
+            "Booking Cancelled",
+            "success"
+          );
+
+          loadData();
+        });
+      });
   }
 
-  /* ===============================
-     BOOK SEAT
-  =============================== */
-  function handleBookSeat(e) {
-    selectedRouteId = e.target.dataset.id;
+  // ===============================
+  // LOAD DATA
+  // ===============================
+  async function loadData() {
 
-    const activeBus = allBuses.find(
-      bus =>
-        bus.status?.toLowerCase() === "active" &&
-        bus.seatsAvailable > 0
-    );
+    try {
 
-    if (!activeBus) {
-      showToast("No Active Bus Available", "error");
-      return;
+      const buses =
+        await apiFetch("/buses");
+
+      const active =
+        buses.filter(
+          b => b.status === "active"
+        ).length;
+
+      document
+        .getElementById(
+          "activeBusesCount"
+        ).textContent = active;
+
+      myBookings =
+        await apiFetch(
+          "/bookings/my-bookings"
+        );
+
+      document
+        .getElementById(
+          "myBookingsCount"
+        ).textContent =
+        myBookings.length;
+
+      allRoutes =
+        await apiFetch("/routes");
+
+      renderRoutes(allRoutes);
+      renderBookings();
+
+    } catch (error) {
+
+      showToast(
+        "Dashboard load failed",
+        "error"
+      );
     }
-
-    selectedBus = activeBus;
-
-    const modal = document.getElementById("bookingModal");
-    if (modal) modal.classList.add("active");
   }
 
+  // ===============================
+  // BOOK CONFIRM
+  // ===============================
   document
     .getElementById("confirmBookBtn")
-    ?.addEventListener("click", async () => {
-      try {
-        await apiFetch("/bookings", "POST", {
-          busId: selectedBus._id,
-          routeId: selectedRouteId,
-          seatNumber:
-            Math.floor(Math.random() * selectedBus.capacity) + 1
-        });
+    ?.addEventListener("click",
+    async () => {
 
-        showToast("Seat Booked Successfully", "success");
+      try {
+
+        const buses = await apiFetch("/buses");
+
+const activeBus = buses.find(
+  bus => bus.status === "active"
+);
+
+await apiFetch(
+  "/bookings",
+  "POST",
+  {
+    busId: activeBus?._id,
+    routeId: selectedRoute,
+    seatNumber: 1
+  }
+);
 
         document
-          .getElementById("bookingModal")
-          ?.classList.remove("active");
+          .getElementById(
+            "bookingModal"
+          )
+          .classList.remove("active");
+
+        showToast(
+          "Seat Booked",
+          "success"
+        );
 
         loadData();
 
       } catch (error) {
-        showToast(error.message, "error");
-      }
+  console.log(error);
+  alert(error.message);
+}
     });
 
-  /* ===============================
-     CANCEL BOOKING
-  =============================== */
-  async function cancelBooking(e) {
-    const bookingId = e.target.dataset.id;
-
-    try {
-      await apiFetch(`/bookings/${bookingId}`, "DELETE");
-
-      showToast("Booking Cancelled", "success");
-
-      loadData();
-
-    } catch (error) {
-      showToast(error.message, "error");
-    }
-  }
-
-  /* ===============================
-     SEARCH ROUTES
-  =============================== */
+  // ===============================
+  // SEARCH
+  // ===============================
   document
     .getElementById("searchInput")
-    ?.addEventListener("input", e => {
-      const value = e.target.value.toLowerCase();
+    ?.addEventListener("input",
+    e => {
 
-      const filtered = allRoutes.filter(route =>
-        route.source?.toLowerCase().includes(value) ||
-        route.destination?.toLowerCase().includes(value)
-      );
+      const val =
+        e.target.value.toLowerCase();
+
+      const filtered =
+        allRoutes.filter(route =>
+          route.destination
+          .toLowerCase()
+          .includes(val)
+        );
 
       renderRoutes(filtered);
     });
 
-  /* ===============================
-     REFRESH
-  =============================== */
+  // ===============================
+  // REFRESH
+  // ===============================
   document
     .getElementById("refreshBusesBtn")
-    ?.addEventListener("click", () => {
+    ?.addEventListener("click",
+    () => {
       loadData();
-      showToast("Data Refreshed", "success");
+      showToast("Refreshed");
     });
 
-  /* ===============================
-     SOCKET TRACKING
-  =============================== */
-  try {
-    const socket = io(SOCKET_URL);
+  // ===============================
+  // SOCKET
+  // ===============================
+  socket.on("live-location",
+  data => {
 
-    socket.on("connect", () => {
-      console.log("Socket Connected");
-    });
+    if (marker && map) {
 
-    socket.on("live-location", data => {
-      console.log("Bus Live Location:", data);
-    });
+      marker.setLatLng([
+        data.lat,
+        data.lng
+      ]);
 
-  } catch (error) {
-    console.log("Socket Not Running");
-  }
+      marker.bindPopup(
+        `${data.driverName}`
+      );
 
-  /* ===============================
-     INITIAL LOAD
-  =============================== */
+      map.panTo([
+        data.lat,
+        data.lng
+      ]);
+    }
+
+    document
+      .getElementById("liveStatus")
+      .textContent =
+      "Driver Live Now";
+  });
+
   loadData();
+
 });

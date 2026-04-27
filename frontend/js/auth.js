@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 setToken(data.token);
-                setUserData(data);
+                setUserData(data.user);
 
                 showToast('Account Created Successfully!', 'success');
                 redirectBasedOnRole(data.role);
