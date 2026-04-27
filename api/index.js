@@ -1,5 +1,5 @@
 try {
-    const app = require('./server.js');
+    const app = require('./_backend/server.js');
     module.exports = app;
 } catch (error) {
     module.exports = (req, res) => {
