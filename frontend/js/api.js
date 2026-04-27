@@ -1,5 +1,5 @@
-const API_URL = "http://localhost:5001/api";
-export const SOCKET_URL = "http://localhost:5001";
+const API_URL = window.location.origin.includes('localhost') ? "http://localhost:5001/api" : "/api";
+export const SOCKET_URL = window.location.origin.includes('localhost') ? "http://localhost:5001" : window.location.origin;
 
 /* ===============================
    GENERIC API CALL
