@@ -7,7 +7,7 @@ const getBuses = async (req, res) => {
   try {
     const buses = await Bus.find().populate("driverId", "name email");
 
-    res.json(buses);
+    res.json({ success: true, buses });
 
   } catch (error) {
     res.status(500).json({
@@ -24,7 +24,7 @@ const getActiveBuses = async (req, res) => {
   try {
     const buses = await Bus.find({ status: "active" });
 
-    res.json(buses);
+    res.json({ success: true, buses });
 
   } catch (error) {
     res.status(500).json({

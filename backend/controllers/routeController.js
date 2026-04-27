@@ -7,7 +7,7 @@ const getRoutes = async (req, res) => {
   try {
     const routes = await Route.find({ isActive: true });
 
-    res.json(routes);
+    res.json({ success: true, routes });
 
   } catch (error) {
     res.status(500).json({

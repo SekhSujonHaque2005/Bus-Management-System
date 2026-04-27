@@ -28,7 +28,7 @@ const getMyBookings = async (req, res) => {
       .populate("busId", "busNumber")
       .populate("routeId", "source destination");
 
-    res.json(bookings);
+    res.json({ success: true, bookings });
 
   } catch (error) {
     res.status(500).json({
