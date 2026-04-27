@@ -8,45 +8,6 @@
     <link rel="stylesheet" href="./css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
-<script type="module">
-import { getToken, getUserData } from "./js/api.js";
-
-/* ===============================
-   SMART REDIRECT SYSTEM
-=============================== */
-
-function redirectByRole() {
-  const token = getToken();
-  const user = getUserData();
-
-  if (!token || !user) return;
-
-  if (user.role === "student") {
-    window.location.href = "student-dashboard.html";
-  } else if (user.role === "admin") {
-    window.location.href = "admin-dashboard.html";
-  } else if (user.role === "driver") {
-    window.location.href = "driver-dashboard.html";
-  }
-}
-
-/* Auto redirect if already logged in */
-redirectByRole();
-
-/* Get Started buttons */
-document.querySelectorAll('a[href="register.html"], a[href="login.html"]')
-.forEach(btn => {
-  btn.addEventListener("click", (e) => {
-    const token = getToken();
-    const user = getUserData();
-
-    if (token && user) {
-      e.preventDefault();
-      redirectByRole();
-    }
-  });
-});
-</script>
 
 
 <body>
@@ -342,6 +303,39 @@ document.querySelectorAll('a[href="register.html"], a[href="login.html"]')
             });
             backToTopBtn.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+    <script type="module">
+        import { getToken, getUserData } from "./js/api.js";
+
+        function redirectByRole() {
+            const token = getToken();
+            const user = getUserData();
+
+            if (!token || !user) return;
+
+            if (user.role === "student") {
+                window.location.href = "student-dashboard.html";
+            } else if (user.role === "admin") {
+                window.location.href = "admin-dashboard.html";
+            } else if (user.role === "driver") {
+                window.location.href = "driver-dashboard.html";
+            }
+        }
+
+        redirectByRole();
+
+        document.querySelectorAll('a[href="register.html"], a[href="login.html"]')
+        .forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const token = getToken();
+                const user = getUserData();
+
+                if (token && user) {
+                    e.preventDefault();
+                    redirectByRole();
+                }
             });
         });
     </script>
