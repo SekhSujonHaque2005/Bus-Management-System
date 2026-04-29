@@ -208,10 +208,82 @@ const deleteUser = async (req, res) => {
   }
 };
 
+/* ===============================
+   UPDATE PROFILE
+================================= */
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id || req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    user.name = req.body.name || user.name;
+    if (req.body.password) {
+      user.password = await bcrypt.hash(req.body.password, 10);
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      success: true,
+      message: "Profile Updated",
+      user: {
+        _id: updatedUser._id,
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/* ===============================
+   DELETE OWN PROFILE
+================================= */
+const deleteUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id || req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    await User.findByIdAndDelete(user._id);
+
+    res.json({
+      success: true,
+      message: "Account Deleted"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUserProfile,
+  deleteUserProfile,
   getUsers,
   deleteUser
 };

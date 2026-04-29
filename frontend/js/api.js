@@ -25,9 +25,20 @@ export async function apiFetch(endpoint, method = "GET", data = null) {
   try {
     const response = await fetch(`${API_URL}${endpoint}`, options);
 
-    const result = await response.json();
+    let result;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      result = await response.json();
+    } else {
+      const text = await response.text();
+      result = { message: text || "Non-JSON response received" };
+    }
 
     if (!response.ok) {
+      // If it's a 404 and we got an HTML page, give a cleaner message
+      if (response.status === 404 && result.message.includes("<!DOCTYPE")) {
+        throw new Error("API endpoint not found (404)");
+      }
       throw new Error(result.message || "Request failed");
     }
 
