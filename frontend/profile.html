@@ -51,6 +51,7 @@
     <script src="js/theme.js" type="module"></script>
     <script type="module">
         import { apiFetch, showToast, logout, getUserData, setUserData } from './js/api.js';
+        import { initTheme } from './js/theme.js';
 
         const user = getUserData();
         if (!user) window.location.href = 'login.html';
@@ -99,6 +100,7 @@
         `;
 
         sidebar.innerHTML = html;
+        initTheme();
 
         // Re-attach listeners
         document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); logout(); });
