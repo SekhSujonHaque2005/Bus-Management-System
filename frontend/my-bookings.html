@@ -76,11 +76,11 @@
                     const row = document.createElement('tr');
                     row.style.borderBottom = '1px solid var(--border)';
                     row.innerHTML = `
-                        <td style="padding: 1rem; font-weight: 700;">${booking.busId.busNumber}</td>
-                        <td style="padding: 1rem;">${booking.busId.routeId.destination}</td>
+                        <td style="padding: 1rem; font-weight: 700;">${booking.busId?.busNumber || 'DELETED'}</td>
+                        <td style="padding: 1rem;">${booking.routeId?.destination || 'N/A'}</td>
                         <td style="padding: 1rem;"><span style="background: var(--brand); color: white; padding: 0.2rem 0.5rem; font-weight: 900;">${booking.seatNumber}</span></td>
                         <td style="padding: 1rem; font-size: 0.8rem;">${new Date(booking.createdAt).toLocaleString().toUpperCase()}</td>
-                        <td style="padding: 1rem;"><span style="font-weight: 900; color: ${booking.status === 'confirmed' ? 'var(--brand)' : '#dc2626'}">${booking.status.toUpperCase()}</span></td>
+                        <td style="padding: 1rem;"><span style="font-weight: 900; color: ${booking.status === 'confirmed' ? 'var(--brand)' : '#dc2626'}">${(booking.status || 'UNKNOWN').toUpperCase()}</span></td>
                         <td style="padding: 1rem; text-align: right;">
                             ${booking.status === 'confirmed' ? `<button class="btn-cancel" data-id="${booking._id}" style="background: none; border: 1px solid #dc2626; color: #dc2626; padding: 0.3rem 0.6rem; cursor: pointer; font-family: var(--font-serif); font-weight: 900; font-size: 0.7rem;">TERMINATE</button>` : '---'}
                         </td>

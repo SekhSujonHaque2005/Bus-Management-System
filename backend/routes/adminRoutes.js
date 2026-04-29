@@ -7,4 +7,3 @@ const { authorize } = require('../middleware/roleMiddleware');
 router.get('/stats', protect, authorize('admin'), getAdminStats);
 
 module.exports = router;
-
